@@ -1,0 +1,148 @@
+\raggedbottom
+\renewcommand{\capfont}{\footnotesize}
+\renewcommand{\caplabelfont}{\footnotesize\bfseries}
+%%----------------------------------------------------------------------------------------------------%%
+%%------------------------------------Sprache---------------------------------------------------------%%
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage[english]{babel}
+\setlength{\parindent}{0pt}
+\usepackage{caption}
+%%----------------------------------------------------------------------------------------------------%%
+%%-------------------------------------Bilder---------------------------------------------------------%%
+%\usepackage[rflt]{floatflt}
+\usepackage{epsfig,wrapfig,epstopdf,psfrag}
+\usepackage{subcaption}
+\usepackage[hang]{footmisc}
+\usepackage{import}
+\usepackage[maxfloats=25]{morefloats}
+%%----------------------------------------------------------------------------------------------------%%
+%%------------------------------------Fussnoten-------------------------------------------------------%%
+\setlength{\footnotesep}{0.5em} 
+\setlength{\footnotemargin}{0.5em} 
+%%----------------------------------------------------------------------------------------------------%%
+%%-------------------------------------Mathematische Symbole---------------------------%%
+\usepackage{pgf,tikz}
+\usetikzlibrary{arrows}
+\definecolor{cqcqcq}{rgb}{0.7529411764705882,0.7529411764705882,0.7529411764705882}
+\usepackage{amsmath,amssymb}
+\usepackage{esint}
+\usepackage{nicefrac}
+\usepackage{pgfplots}
+%%----------------------------------------------------------------------------------------------------%%
+%%-------------------------------------Programming----------------------------------------------------%%
+\usepackage[curves]{struktex}
+\usepackage{fancyvrb}
+%%----------------------------------------------------------------------------------------------------%%
+%%-------------------------------------SI unit/Abkürzungen--------------------------------------------%%
+\usepackage{siunitx}
+\usepackage{acronym}
+%%----------------------------------------------------------------------------------------------------%%
+%%-------------------------------------Tabellen-------------------------------------------------------%%
+\usepackage{ragged2e,array,longtable,lscape}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage[figuresright]{rotating}
+%%----------------------------------------------------------------------------------------------------%%
+%%-------------------------------------Code-----------------------------------------------------------%%
+\usepackage{scrhack}
+\usepackage{listings}
+%\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+%\lstset{language=tcl,basicstyle=\scriptsize,numbers=left,numberstyle=\scriptsize,stepnumber=10, numberfirstline=true}
+\usepackage{printlen}	
+\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mylilas}{RGB}{170,55,241}
+\lstset{language=Matlab,%
+	basicstyle=\ttfamily\scriptsize,    
+    %basicstyle=\color{red},
+    breaklines=false,%
+    morekeywords={matlab2tikz},
+    keywordstyle=\color{blue},%
+    morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
+    identifierstyle=\color{black},%
+    stringstyle=\color{mylilas},
+    commentstyle=\color{mygreen},%
+    showstringspaces=false,%without this there will be a symbol in the places where there is a space
+    numbers=left,%
+    numberstyle={\tiny \color{black}},% size of the numbers
+    numbersep=9pt, % this defines how far the numbers are from the text
+    emph=[1]{for,end,break},emphstyle=[1]\color{red}, %some words to emphasise
+    %emph=[2]{word1,word2}, emphstyle=[2]{style},    
+}
+%%----------------------------------------------------------------------------------------------------%%
+%%-------------------------------------Zitieren-------------------------------------------------------%%
+\usepackage{cite}
+%%----------------------------------------------------------------------------------------------------%%
+%%-------------------------------------PDF-LaTeX------------------------------------------------------%%
+\usepackage[colorlinks,
+                    pdfpagelabels,
+                    pdfstartview = FitH,
+                    bookmarksopen = false,
+                    bookmarksnumbered = true,
+                    hypertexnames = false
+                    ]{hyperref}
+\hypersetup{
+                    pdftoolbar=true,          % show Acrobat’s toolbar?
+                    pdfmenubar=true,          % show Acrobat’s menu?
+                    pdfauthor={Fabian Dettenrieder},     % author
+                    colorlinks=true,          % false: boxed links; true: colored links
+                    linkcolor=black,          % color of internal links
+                    citecolor=black,          % color of links to bibliography
+                    filecolor=black,          % color of file links
+                    urlcolor=black            % color of external links
+}
+\usepackage{pdfpages}
+\usepackage[section]{placeins}
+%%----------------------------------------------------------------------------------------------------%%
+%%-------------------------------------Farbe----------------------------------------------------------%%
+\usepackage{color}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\newcommand{\white}[1]{\textcolor{white}{#1}}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\definecolor{darkred}{rgb}{0.8,0.1,0}
+\definecolor{darkblue}{rgb}{0.1,0.5,0.8}
+	\newcommand{\darkred}[1]{\textcolor{darkred}{#1}}
+\newcommand{\darkblue}[1]{\textcolor{darkblue}{#1}}
+\newcommand{\darkgreen}[1]{\textcolor{darkgreen}{#1}}
+%%----------------------------------------------------------------------------------------------------%%
+%%-------------------------------------neue Befehle---------------------------------------------------%%
+% Automatisches Hinzufügen bei Referenzen
+\newcommand{\figref}[1]{(Abb.~\ref{#1})}
+\newcommand{\figrefl}[1]{Abbildung~\ref{#1}}
+\newcommand{\tbref}[1]{(Tab.~\ref{#1})}
+\newcommand{\tbrefl}[1]{Tabelle~\ref{#1}}
+\newcommand{\chpref}[1]{\S~\ref{#1}}
+\newcommand{\secref}[1]{\S~\ref{#1}}
+\newcommand{\appref}[1]{Anhang~\ref{#1}}
+\newcommand{\longeqref}[1]{Gleichung~\eqref{#1}}
+\newcommand{\eref}[1]{(\ref{#1})}
+\newcommand{\mbf}[1]{\mathbf{#1}}
+\newcommand{\mrm}[1]{\mathrm{#1}}
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+\newcommand{\mcl}[1]{\mathcal{#1}}
+\newcommand{\abs}[1]{\ensuremath{\left\vert#1\right\vert}}
+%%----------------------------------------------------------------------------------------------------%%
+%%-------------------------------------Kopfzeilen-----------------------------------------------%%
+\usepackage{scrpage2}
+\clearscrheadings
+\clearscrplain
+\ohead[\pagemark]{\pagemark}
+\rehead{\leftmark}
+\lohead{\rightmark}
+\addtocontents{toc}{\protect\markright{}}
+\addtocontents{lof}{\protect\markright{}}
+\addtocontents{lot}{\protect\markright{}}
+\automark[section]{chapter}
+
+%%----------------------------------------------------------------------------------------------------%%
+%%-------------------------------------Listen------------------------------------------------------%%
+\setlength{\itemsep}{0ex}
+\setlength{\parsep}{0ex}
+\setlength{\parskip}{2mm}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+%%----------------------------------------------------------------------------------------------------%%
+%%----------------------------------------------------------------------------------------------------%%
