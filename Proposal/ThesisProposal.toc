@@ -2,15 +2,27 @@
 \select@language {english}
 \contentsline {section}{\numberline {1}Time Integration of Reacting Flows}{3}{section.2}
 \contentsline {subsection}{\numberline {1.1}Motivation \& Background}{3}{subsection.3}
-\contentsline {subsection}{\numberline {1.2}Governing Equations}{3}{subsection.4}
-\contentsline {subsection}{\numberline {1.3}Numerical Methods}{3}{subsection.9}
-\contentsline {subsection}{\numberline {1.4}Validation}{3}{subsection.10}
-\contentsline {subsection}{\numberline {1.5}Results}{4}{subsection.11}
-\contentsline {subsection}{\numberline {1.6}Outlook}{4}{subsection.12}
-\contentsline {section}{\numberline {2}Energy-Stable Hybrid Spatial Discretizations}{4}{section.13}
-\contentsline {subsection}{\numberline {2.1}Motivation \& Background}{4}{subsection.14}
-\contentsline {subsection}{\numberline {2.2}Governing Equations}{4}{subsection.15}
-\contentsline {subsection}{\numberline {2.3}Numerical Methods}{5}{subsection.20}
-\contentsline {subsection}{\numberline {2.4}Validation}{5}{subsection.21}
-\contentsline {subsection}{\numberline {2.5}Results}{5}{subsection.22}
-\contentsline {subsection}{\numberline {2.6}Outlook}{5}{subsection.23}
+\contentsline {subsubsection}{\numberline {1.1.1}Goals, Bounds, and Impact}{3}{subsubsection.4}
+\contentsline {subsection}{\numberline {1.2}Governing Equations}{4}{subsection.5}
+\contentsline {subsection}{\numberline {1.3}Numerical Methods}{6}{subsection.18}
+\contentsline {subsubsection}{\numberline {1.3.1}Adams Methods}{6}{subsubsection.19}
+\contentsline {subsubsection}{\numberline {1.3.2}Multi-rate Adams Methods}{7}{subsubsection.22}
+\contentsline {subsubsection}{\numberline {1.3.3}Timestep Control Algorithm}{8}{subsubsection.24}
+\contentsline {subsection}{\numberline {1.4}Validation}{9}{subsection.28}
+\contentsline {subsection}{\numberline {1.5}Results}{9}{subsection.30}
+\contentsline {subsection}{\numberline {1.6}Outlook}{10}{subsection.31}
+\contentsline {subsubsection}{\numberline {1.6.1}Current Status}{10}{subsubsection.32}
+\contentsline {subsubsection}{\numberline {1.6.2}Risk Mitigation}{10}{subsubsection.33}
+\contentsline {section}{\numberline {2}Energy-Stable Hybrid Spatial Discretizations}{11}{section.34}
+\contentsline {subsection}{\numberline {2.1}Motivation \& Background}{11}{subsection.35}
+\contentsline {subsubsection}{\numberline {2.1.1}Goals, Bounds, and Impact}{11}{subsubsection.37}
+\contentsline {subsection}{\numberline {2.2}Governing Equations}{11}{subsection.38}
+\contentsline {subsection}{\numberline {2.3}Numerical Methods}{12}{subsection.43}
+\contentsline {subsubsection}{\numberline {2.3.1}Summation-by-Parts Operators}{12}{subsubsection.44}
+\contentsline {subsubsection}{\numberline {2.3.2}Discontinuous Galerkin Method}{13}{subsubsection.45}
+\contentsline {subsubsection}{\numberline {2.3.3}Interface Method}{13}{subsubsection.46}
+\contentsline {subsection}{\numberline {2.4}Validation}{13}{subsection.47}
+\contentsline {subsection}{\numberline {2.5}Results}{14}{subsection.54}
+\contentsline {subsection}{\numberline {2.6}Outlook}{14}{subsection.55}
+\contentsline {subsubsection}{\numberline {2.6.1}Current Status}{14}{subsubsection.56}
+\contentsline {subsubsection}{\numberline {2.6.2}Risk Mitigation}{14}{subsubsection.57}

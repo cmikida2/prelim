@@ -1,43 +1,74 @@
-\subsection{The Topic/Problem}
+\subsection{Motivation \& Background}
 
-This section of the proposal targets a lack of high-order accurate and
-provably stable interface conditions between structured and unstructured
-meshes for computational fluid dynamic simulations. In particular, our aim
-is to create a provably stable and accurate interface between summation-by-parts
-finite difference discretizations (structured) and discontinuous Galerkin
-methods (unstructured).  Achieving this would provide an option to create localized
-areas of unstructured meshing (with superior flexibility for discretizing complex
-boundaries/geometries) in existing simulations, providing an alternative to
-overset curvilinear meshes.
+\subsubsection{Historical Context}
 
+Brief literature review on the state of hybrid discretizations,
+and what existing formulations lack/possess.
 
-\begin{figure}
-\centering
-\includegraphics[width=0.3\linewidth,trim=4 4 4 4,clip]{figures/nonconforming_sample_1.png}
-\caption{An example of a discretization for which we hope to achieve a stable and accurate nonconforming interface.
-         Image credit: \emph{A Hybrid FETD-FDTD Method with Nonconforming Meshes}, B. Zhu, J. Chen, W. Zhong, Q. Liu.
-         Commun. Computational Physics, Vol. 9, No. 3, pp. 828-842. March 2011.}
-\label{fig:nonconforming_1}
-\end{figure}
+\subsubsection{Goals, Bounds, and Impact}
+
+Primary goal: create an interface for a hybrid SBP-DG discretization
+that is provably energy stable, meaning that the semi-discrete expression
+for the rate of change of total energy (energy across all subblocks) can
+be proven to be non-increasing. Initially, this will focus on/target the
+less complex interior stencils, with the hope of extending the lessons
+learned to the boundaries (is it fair to call the latter a "soft bound?").
+
+Impact: provide a stable and accurate way to mesh complex geometries
+by allowing for the simplicity of finite differences away from physical boundaries,
+with the flexibility of DG near said boundaries.
 
 %===========================================================================
-\subsection{Goals and Bounds}
-(insert text here)
+\subsection{Governing Equations}
+
+This subsection will lay out the target problem for the novel hybrid
+discretization, which for now is the acoustic wave equation in two dimensions.
 
 %===========================================================================
-\subsection{The Plan}
-(Insert text here)
+\subsection{Numerical Methods}
+
+This subsection will lay out the basics of the finite difference method
+(summation by parts), the basics of the DG method, and further discuss
+the approach for the interface, all in subsections.
+
+\subsubsection{Summation-by-Parts Operators}
+
+\subsubsection{Discontinuous Galerkin Method}
+
+\subsubsection{Interface Method}
 
 %===========================================================================
-\subsection{Impact}
-(Insert text here)
+\subsection{Validation}
+
+This section lays out the test problem we will use to determine
+whether or not our new method meets the goals laid out in the
+previous section(s), and also defines the success metrics we will
+use to measure this (namely, energy tracking - both to ensure
+that our semi-discrete energy relation is accurate to the actual
+numerical method at work, and to ensure that energy is non-increasing).
+
+\subsection{Results}
+
+This section will discuss the results obtained thus far, including the
+verification that Kozdon and Wilcox's projection operators (our starting point)
+do give an energy value that matches the semi-discrete relation used for the
+proof, and a demonstration showing the subpar nature of these operators as
+an ending point (this likely will be specific to the poor boundary behavior).
+
+\subsection{Outlook}
+
+\subsubsection{Risk Mitigation}
+
+This section will discuss the potential fallback of extension of an existing
+interface method (Kozdon and Wilcox) to three dimensions, should our goal
+of a new interface method not come to fruition. Another fallback goal could
+involve determining whether this existing interface method imposes a timestep
+limitation and exposing this to multi-rate integration.
 
 %===========================================================================
-\subsection{Risk Mitigation}
-(Insert text here)
+\subsubsection{Current Status}
 
-%===========================================================================
-\subsection{Current Status}
-(Insert text here)
+This section will discuss the current status of the project, including the
+hunt for a unisolvent projection operator.
 
 %===========================================================================
