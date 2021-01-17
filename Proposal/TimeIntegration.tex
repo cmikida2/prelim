@@ -182,7 +182,7 @@ also often decouple an explicit treatment of the Navier-Stokes equations \eref{e
 from the implicit treatment of the chemical kinetics, resulting in a splitting
 approach that is at best first order in time.
 
-The topic of this section of the proposal, then, is to answer the following
+The topic of this section of the thesis, then, is to answer the following
 research question: \textbf{can we derive performance and/or temporal accuracy benefits
 from an application of multi-rate Adams integrators (implicit and/or explicit) to this
 set of governing equations?}
@@ -397,10 +397,10 @@ Jacobians, we will instead use PyJac-V2 to obtain the analytical Jacobian
 for a given chemical mechanism via code generation, which will then
 be used by a simple Newton algorithm to perform the implicit solve. More
 details on the construction of this Jacobian are given by Niemeyer, but we
-detail the basic form, in addition to an alternate differential-algebraic
+document the basic form, in addition to an alternate differential-algebraic
 formulation, below.
 
-The chemical kinetic Jacobian can be written as the matrix
+The chemical kinetics Jacobian can be written as the matrix
 \begin{align}
 J = \frac{\partial f_{i}}{\partial \Phi_{j}} \label{eq:jac}
 \end{align}
@@ -429,8 +429,9 @@ it in true matrix form:
 J = \begin{bmatrix} \frac{d\dot{T}}{dT} & \frac{d\dot{T}}{dP} & \frac{d\dot{T}}{dn_{1}} & \hdots & \frac{d\dot{T}}{dn_{N_{sp}-1}} \\
                     \frac{d\dot{P}}{dT} & \frac{d\dot{P}}{dP} & \frac{d\dot{P}}{dn_{1}} & \hdots & \frac{d\dot{P}}{dn_{N_{sp}-1}} \\
 		    \frac{d\dot{n}_{1}}{dT} & \frac{d\dot{n}_{1}}{dP} & \frac{d\dot{n}_{1}}{dn_{1}} & \hdots & \frac{d\dot{n}_{1}}{dn_{N_{sp}-1}} \\
-		    \vdots & \vdots & \vdots & \hdots & \vdots \\
+		    \vdots & \vdots & \vdots & \ddots & \vdots \\
 		    \frac{d\dot{n}_{N_{sp}-1}}{dT} & \frac{d\dot{n}_{N_{sp}-1}}{dP} & \frac{d\dot{n}_{N_{sp}-1}}{dn_{1}} & \hdots & \frac{d\dot{n}_{N_{sp}-1}}{dn_{N_{sp}-1}} \\
+    \end{bmatrix}
 \end{align}
 Providing this matrix to the implicit solver should serve to reduce the
 number of chemical right-hand side calls required to time-march the
@@ -454,7 +455,18 @@ we then replace with a temperature Newton solve based on the constant internal
 energy constraint via Cantera, as well as a direct application of the ideal
 gas law to obtain the pressure. This modified Jacobian can be expressed as
 \begin{align}
+J^{*} = \begin{bmatrix}	\frac{d\dot{n}_{1}^{*}}{dn_{1}} & \hdots & \frac{d\dot{n}_{1}^{*}}{dn_{N_{sp}-1}} \\
+	                \vdots & \ddots & \vdots \\
+	                \frac{d\dot{n}_{N_{sp}-1}^{*}}{dn_{1}} & \hdots & \frac{d\dot{n}_{N_{sp}-1}^{*}}{dn_{N_{sp}-1}} \\
+    \end{bmatrix}
 \end{align}
+where
+\begin{align}
+\frac{d\dot{n}_{i}^{*}}{dn_{j}} = \frac{d\dot{n}_{i}}{dn_{j}} - \frac{U_{j}}{C_{v}}\frac{d\dot{n}_{i}}{dT}.
+\end{align}
+In this expression, $U_{j}$ is the contribution of the $j$th species to the
+internal energy.
+
 Which of these Jacobians is ideal for our purposes is a consideration worth
 monitoring as our implicit integration techniques develop. In particular, 
 a third relatively unexplored approach would use the fully differential
@@ -545,7 +557,7 @@ for the purposes of chemistry integration are also being implemented, along with
 an application of the error-informed timestep control algorithm to both
 single-rate and multi-rate Adams methods. Construction of implicit-explicit multi-rate
 Adams methods with error-informed adaptivity are well underway, with testing
-of these new methods on small-scale Cantera reactor system problems in progress.
+of these new methods on a small-scale Cantera two-reactor system in progress.
 
 As for the reacting crossflow validation problem, an initial setup employing
 cold flow (no autoignition) with the perturbed baseflow applied to sea level air
@@ -558,7 +570,7 @@ methods for reacting flows as they become available.
 \subsubsection{Risk Mitigation}
 
 An important question to ask amidst all of these promises is: 
-textbf{what if this doesn't work out?} Assuming demonstration of improved
+\textbf{what if this doesn't work out?} Assuming demonstration of improved
 performance or accuracy of the \emph{multi-rate} integrators over the
 state-of-the-art is for reasons unforseen impossible, a "fallback" takeaway
 would be demonstration of improvement over a first-order splitting
