@@ -20,23 +20,24 @@ However, this approach is at best first-order accurate in time.
 To more accurately handle such situations, implicit-explicit (IMEX) time
 integration schemes have been developed in order to partition the
 governing equations and treat the stiff terms implicitly while treating
-the nonstiff terms explicitly. In 2003, Kennedy and Carpenter introduced
-additive Runge-Kutta schemes for convection-diffusion-reaction equations,
+the nonstiff terms explicitly. In 2003, Kennedy and Carpenter \cite{kennedy2003additive}
+introduced additive Runge-Kutta schemes for convection-diffusion-reaction equations,
 demonstrating a higher order of temporal accuracy than the operator splitting
-approach is capable of attaining. In 2011, Svard and Mishra also introduced
-more simplistic one-step IMEX schemes mimicking single stages in these
+approach is capable of attaining. In 2011, Sv{\"a}rd and Mishra \cite{svard2011implicit}
+also introduced more simplistic one-step IMEX schemes mimicking single stages in these
 additive-RK schemes, applying them to the reactive Euler equations and
 demonstrating first order with a need for numerical diffusion as the problem
 becomes less stiff.
 
 Another approach to handling stiffness, and the resulting disparity in
 timescales between different simulation components, is the use of multi-rate
-time integration. Gear and Wells were the initial authors of work on
-multi-step multi-rate methods, with similar contributions provided more
-recently by Sandu and Constantinescu for hyperbolic conservation laws. Sandu
-and Constantinescu later extended this work to develop implicit multi-rate
-schemes, but failed to introduce a scheme featuring both implicitly and
-explicitly advanced components within a multi-rate framework.
+time integration. Gear and Wells \cite{gear1984multirate} were the initial authors of
+work on multi-step multi-rate methods, with similar contributions provided more
+recently by Constantinescu and Sandu \cite{constantinescu2007multirate} for hyperbolic
+conservation laws. Constantinescu and Sandu later extended this work to develop implicit
+multi-rate schemes \cite{constantinescu2010extrapolated},
+\cite{constantinescu2013extrapolated}, but failed to introduce a scheme featuring both
+implicitly and explicitly advanced components within a multi-rate framework.
 
 \subsubsection{Goals, Bounds, and Impact}
 
@@ -66,7 +67,8 @@ scheme include:
       fast-evolving components, and which should be treated as slow-evolving components}
 \item{Evaluation order ("fastest-first" vs. "slowest-first")}
 \item{Re-extrapolation}
-\item{Inclusion of additional history beyond order requirements (shown in \cite{mikida2019multi} to provide real-axis stability improvement)}
+\item{Inclusion of additional history beyond order requirements (shown in \cite{mikida2019multi}
+      to provide real-axis stability improvement)}
 \item{Which solution components to include in error estimation for adaptive timestep
       control}
 \item{Whether error control is accomplished through timestep control or step ratio control}
@@ -452,7 +454,7 @@ kinetic Jacobian modified to include the algebraic constraints explicitly can
 be used. This approach, detailed in, modifies the molar source terms to incorporate
 this constraint while removing the temperature and pressure source terms (which
 we then replace with a temperature Newton solve based on the constant internal
-energy constraint via Cantera, as well as a direct application of the ideal
+energy constraint via Cantera \cite{cantera}, as well as a direct application of the ideal
 gas law to obtain the pressure. This modified Jacobian can be expressed as
 \begin{align}
 J^{*} = \begin{bmatrix}	\frac{d\dot{n}_{1}^{*}}{dn_{1}} & \hdots & \frac{d\dot{n}_{1}^{*}}{dn_{N_{sp}-1}} \\
@@ -557,7 +559,7 @@ for the purposes of chemistry integration are also being implemented, along with
 an application of the error-informed timestep control algorithm to both
 single-rate and multi-rate Adams methods. Construction of implicit-explicit multi-rate
 Adams methods with error-informed adaptivity are well underway, with testing
-of these new methods on a small-scale Cantera two-reactor system in progress.
+of these new methods on a small-scale Cantera \cite{cantera} two-reactor system in progress.
 
 As for the reacting crossflow validation problem, an initial setup employing
 cold flow (no autoignition) with the perturbed baseflow applied to sea level air
