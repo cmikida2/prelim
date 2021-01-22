@@ -2,13 +2,13 @@
 
 When simulating problems in computational fluid dynamics involving complex
 geometries, numerical difficulties are often encountered that require
-employing one of a number of different approaches to mitigate loss of accuracy
+employing one of a number of different approaches to mitigate loss of accuracy and/or stability
 due to poor spatial resolution. While finite-difference approaches to spatial
 discretization are popular due to their simplicity and efficiency when working
 with smooth solutions, their geometric flexibility is typically limited in spite
 of the well-documented ability to use coordinate transforms to create intricate
 curvilinear meshes, as well as the ability to use overset meshes to produce
-higher resolution in a particularly troublesome section of the spatial domain.
+higher resolution in particularly troublesome sections of the spatial domain.
 
 In particular, the SBP methodology pioneered by Strand \cite{strand1994summation},
 which mimics
@@ -64,21 +64,22 @@ and Wilcox, both the methods of Almquist and Friedrich fail to extend their meth
 
 \subsubsection{Goals, Bounds, and Impact}
 
-This section of the proposal targets a lack of fully determined high-order
+This section of the proposal targets a lack of fully-determined high-order
 accurate and provably stable interface conditions between structured and unstructured
 meshes for computational fluid dynamic simulations. In particular, our aim
-is to create a provably stable, accurate, and fully determined interface between
+is to create a provably stable, accurate, and fully-determined interface between
 summation-by-parts finite difference discretizations (structured) and discontinuous
 Galerkin methods (unstructured) that doesn't rely on optimization to establish its
 projection operators. Achieving this would provide a more robust option for creating
 localized areas of unstructured meshing (with superior flexibility for discretizing
 complex boundaries/geometries) in existing simulations, providing an alternative to
-comparatively less flexible overset curvilinear meshes or multiblock conforming/nonconforming finite difference schemes.
+comparatively less flexible overset curvilinear meshes or multiblock
+conforming/nonconforming finite difference schemes.
 
 %===========================================================================
 \subsection{Governing Equations}
 
-The initial problem for which our new hybrid method will be targeted is
+The initial problem to which our new hybrid method will be targeted is
 the acoustic wave equation in two dimensions, in first-order form:
 \begin{align}
 	&\rho \frac{\partial v_{i}}{\partial t} + \frac{\partial p}{\partial x_{i}} = 0 \hspace{2mm} (i = 1, 2), \label{eq:wave1} \\
@@ -95,6 +96,9 @@ energy $E$ of each discretization block:
 \begin{align}
 \mcl{E} = \sum_{blocks} E
 \end{align}
+The definitions of both the energies and the energy dissipation rates for each
+block (each having its own spatial discretization), are given in subsequent
+sections.
 
 %===========================================================================
 \subsection{Numerical Methods}
@@ -156,7 +160,8 @@ Here, we have defined the matrices
 	\pmb{D}_{1} =\;& \pmb{D}_{N_{1}}\otimes \pmb{I}_{N_{2}},&
 	\pmb{D}_{2} =\;& \pmb{I}_{N_{1}}\otimes \pmb{D}_{N_{2}},&
 \end{align}
-while we define solution vectors as, for example,
+where $\pmb{D}_{i} = \pmb{H}_{i}^{-1}\pmb{Q}_{i}$ defines an SBP approximation of $\frac{\partial}{\partial x_{i}}$.
+We define corresponding solution vectors as, for example,
 \begin{align}
   \pmb{p} &=
   \begin{bmatrix}
@@ -246,7 +251,7 @@ the reference element:
   &\int_{\tilde{\Omega}} w_{i}\left[\rho J \frac{\partial v_{i}}{\partial t}
   + \frac{\partial}{\partial \xi_{1}}\left(J\frac{\partial \xi_{1}}{\partial x_{i}} p\right)
   + \frac{\partial}{\partial \xi_{2}}\left(J\frac{\partial \xi_{2}}{\partial x_{i}} p\right)\right]\;dA\\
-  \label{eqn:wave1_var}
+  \label{eq:wave1_var}
   &\qquad=
   -\int_{\partial \tilde{\Omega}} w_{i} S_{J} n_{i} \left( p^* - p\right)ds,
   \quad i=1,2,\\
@@ -257,7 +262,7 @@ the reference element:
   + J\frac{\partial \xi_{2}}{\partial x_{1}} \frac{\partial v_{1}}{\partial \xi_{2}}
   + J\frac{\partial \xi_{1}}{\partial x_{2}} \frac{\partial v_{2}}{\partial \xi_{1}}
   + J\frac{\partial \xi_{2}}{\partial x_{2}} \frac{\partial v_{2}}{\partial \xi_{2}}\right)\right]\;dA\\
-  \label{eqn:wave2_var}
+  \label{eq:wave2_var}
   &\qquad=
   -\int_{\partial \tilde{\Omega}} \varphi\lambda S_{J}
   \left(v^*-v\right) ds,
@@ -461,7 +466,7 @@ is specified to match the order of the discontinous Galerkin method.
 \label{fig:split_domain}
 \end{figure}
 
-Our success metrics for this test problem include
+Our success metrics for this test problem include:
 \begin{itemize}
 \item{Demonstrating accurate recreation of the total energy of the system, as observed in the
       numerical simulation of the problem, via a total energy relation derived from the
@@ -469,11 +474,7 @@ Our success metrics for this test problem include
 \item{Demonstrating that this energy does not increase (condition for semi-discrete stability).}
 \item{Demonstrating the prescribed order of accuracy using L2 norms.}
 \end{itemize}
-
 Upon fulfillment of these goals, extension to three dimensions will be considered.
-
-%===========================================================================
-%\subsection{Results}
 
 %===========================================================================
 \subsection{Outlook}
