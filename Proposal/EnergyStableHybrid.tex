@@ -1,5 +1,7 @@
 \subsection{Motivation \& Background}
 
+\subsubsection{Historical Context}
+
 When simulating problems in computational fluid dynamics involving complex
 geometries, numerical difficulties are often encountered that require
 employing one of a number of different approaches to mitigate loss of accuracy and/or stability
@@ -62,19 +64,60 @@ extended to problems with second-order spatial derivatives, but their results ag
 were confined to problems with a fixed 2:1 refinement ratio. Furthermore, unlike Kozdon
 and Wilcox, both the methods of Almquist and Friedrich fail to extend their method to hybrid structured-unstructured discretizations.
 
-\subsubsection{Goals, Bounds, and Impact}
+\subsubsection{Goals, Bounds, and Impact} \label{sec:hybrid_goals}
 
 This section of the proposal targets a lack of fully-determined high-order
 accurate and provably stable interface conditions between structured and unstructured
-meshes for computational fluid dynamic simulations. In particular, our aim
-is to create a provably stable, accurate, and fully-determined interface between
-summation-by-parts finite difference discretizations (structured) and discontinuous
-Galerkin methods (unstructured) that doesn't rely on optimization to establish its
-projection operators. Achieving this would provide a more robust option for creating
-localized areas of unstructured meshing (with superior flexibility for discretizing
-complex boundaries/geometries) in existing simulations, providing an alternative to
-comparatively less flexible overset curvilinear meshes or multiblock
-conforming/nonconforming finite difference schemes.
+meshes for computational fluid dynamic simulations. The key contribution of this work
+will be construction of an interface between the structured (finite difference SBP)
+and the unstructured (DG) spatial discretizations that does not rely upon
+optimization or an unequal number of constraints and unknowns for construction
+of the solution projections. Currently, our plan is to match the approach of
+\cite{kozdon2016stable}, with the interface being defined by operators $\pmb{P}_{a2b}$
+and $\pmb{P}_{b2a}$ that project the solution along the edge of discretization $a$
+into discretization $b$, and vice versa.
+
+An additional goal to be pursued in conjunction with a unisolvent procedure while
+maintaining accuracy and stability is a resulting projection process that is able to
+provide "round-trip" fidelity of projection, meaning that projection from the structured
+grid to the unstructured grid and back results in a solution identical to the starting
+point. This characteristic is one that the operators of \cite{kozdon2016stable} lack,
+even in projection from one grid into the intermediate glue layer (see Section \ref{sec:interface}).
+
+The strategy for pursuance of these goals begins with consideration of the
+\emph{interior} projection operator only, given the simplicity of the existing
+interior stencil relative to the boundary (which features many more unknowns).
+Noting also that the compatibility condition (discussed in Section \ref{sec:interface}) to be the
+critical condition for proving a stable interface) disallows us from obtaining
+exact "round-trip" projection, other conditions may be considered based
+on further manipulation or restructuring of the edge energy dissipation relations,
+which will be derived for both structured and unstructured spatial discretizations
+in subsequent sections. Should a procedure for fully-determined interior interface
+conditions be applied successfully to a periodic problem, the boundary interface
+will subsequently be considered.
+
+%In particular, our aim
+%is to create a provably stable, accurate, and fully-determined interface between
+%summation-by-parts finite difference discretizations (structured) and discontinuous
+%Galerkin methods (unstructured) that doesn't rely on optimization to establish its
+%projection operators. Achieving this would provide a more robust option for creating
+%localized areas of unstructured meshing (with superior flexibility for discretizing
+%complex boundaries/geometries) in existing simulations, providing an alternative to
+%comparatively less flexible overset curvilinear meshes or multiblock
+%conforming/nonconforming finite difference schemes.
+
+%With all of this borne in mind, our primary goal for the interface method, then,
+%is to obtain projection operators that maintain the provable energy stability
+%of Kozdon and Wilcox, which are also
+%\begin{itemize}
+%\item{obtained from a construction procedure that is demonstrably \emph{unisolvent},
+%      with an equal number of constraints and unknowns resulting in a square system
+%      of equations}
+%\item{therefore not based on optimization}
+%\item{able to provide "round-trip" fidelity of projection, meaning that projection
+%      from the grid to the glue, and then back to the grid, results in a solution
+%      identical to the starting point.}
+%\end{itemize}
 
 %===========================================================================
 \subsection{Governing Equations}
@@ -350,73 +393,101 @@ the energy dissipation rate
   \left(\pmb{v}^{*}_{K} - \pmb{v}^{-}_{K}\right). \label{eq:dg_diss}
 \end{align}
 
-\subsubsection{Interface Method}
+\subsubsection{Interface Method} \label{sec:interface}
 
-The key contribution of this work will be construction of an interface
-between the structured (finite difference SBP) and the unstructured (DG)
-spatial discretizations that is stable and accurate, and does not rely upon
-optimization or an unequal number of constraints and unknowns for construction
-of the solution projections. Currently, our plan is to match the approach of
-\cite{kozdon2016stable}, with the interface being defined by operators $\pmb{P}_{a2b}$
-and $\pmb{P}_{b2a}$ that project the solution along the edge of discretization $a$
-into discretization $b$, and vice versa.
+Clearly critical in the proof of energy stability for the marriage of the
+above methods is the definition of the terms $\pmb{p}^*$ and $\pmb{v}^*$, most
+often referred to as the numerical fluxes (in the context of DG) or penalty fluxes
+(in the context of SBP). At the interface between the two discretizations, these
+quantities are naturally contingent on the nature of the interface method, which
+for the purposes of this discussion take a basic form based on projection operators
+that move the Grid $a$ solutions to Grid $b$,
+\begin{align}
+\pmb{f}_{a} = \pmb{P}_{b2a}\pmb{f}_{b} \\
+\pmb{f}_{b} = \pmb{P}_{a2b}\pmb{f}_{a},
+\end{align}
+where $f_{a}$ is of course a function defined on Grid $a$ and $f_{b}$ is a function
+defined on Grid $b$. Note that it is nowhere stated (and in fact proves to be untrue
+for SBP-to-SBP projection using Kozdon and Wilcox's method) that $\pmb{P}_{a2b}\pmb{P}_{b2a} = \pmb{I}$.
 
+While the somewhat unique definitions of $\pmb{p}^{*}$ and
+$\pmb{v}^{*}$, which incorporate these projected quantities directly, are perhaps
+equally important to provable stability, for now we will focus on the projection
+operation itself, using the work of Kozdon and Wilcox as a starting point.
 As detailed in their paper, the operators of Kozdon and Wilcox rely primarily
 upon the principle of projecting solutions from either discretization
 first into an intermediate "glue" space of piecewise continuous polynomials
-before projecting the solution onto the other nonconforming discretization. The
-critical condition that allows proof of stability is referred to as the
+before projecting the solution onto the other nonconforming discretization. Whereas
+the solution on the respective structured and unstructured grids is respresented at
+the block boundaries on the grid points, the solution on the intermediate glue grid
+is represented on each interval by modal coefficient values multiplying Legendre
+polynomials defined on the interval $[-1,1]$.
+
+The critical condition that allows proof of stability is referred to as the
 \emph{compatibility condition}, and amounts to a simple relation between the
 grid-to-glue and glue-to-grid projection operators, the mass matrix of the
 piecewise polynomial description used in the glue layer, and a norm operator
 $\pmb{H}$:
 \begin{align}
-\pmb{P}_{f2g}\pmb{M} = \pmb{P}_{g2f}^{T}\pmb{H}
+\pmb{P}_{f2g}\pmb{M} = \pmb{P}_{g2f}^{T}\pmb{H} \label{eq:compat}
 \end{align}
 In the case of SBP finite difference discretizations, the norm $\pmb{H}$ is equivalent
 to the SBP-norm, which for the purposes of this work we will take to be
 a diagonal matrix. In the case of discontinuous Galerkin, this $\pmb{H}$ operator is
 the diagonal matrix of integration weights at the cubature points at a single
-DG element edge, $\pmb{\Omega}_{bc}$.
+DG element edge, $\pmb{\Omega}_{bc}$.  This compatibility condition, used in conjunction with
+the per-block semi-discrete expressions for energy dissipation \eref{eq:sbp_diss} and
+\eref{eq:dg_diss}, is what allows for energy stability to be proven.
 
-This compatibility condition, used in conjunction with the per-block semi-discrete
-expressions for energy \eref{eq:sbp_diss} and \eref{eq:dg_diss}, is what allows for
-energy stability to be proven, and as a result, this condition is used as an explicit
+Also critical in the projection from one spatial discretization to another via this
+method is the projection between glue spaces (see Figure \ref{fig:glue_layers}). A
+compatibility condition similar to \ref{eq:compat} is assumed for this projection,
+\begin{align}
+	\pmb{M}_{a}\pmb{P}_{gb2ga} = \pmb{P}_{ga2gb}^{T}\pmb{M}_{b} \label{eq:compat_glues}
+\end{align}
+but it is shown in \cite{kozdon2016stable} (see Lemma 2.3) that the operators $\pmb{P}_{g2f}$ and
+$\pmb{P}_{f2g}$ can also be generalized as projection operators to and from the finest
+glue layer.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/glue_layers.png}
+\caption{Image from Kozdon and Wilcox \cite{kozdon2016stable} demonstrating the glue
+         layers present in grid-to-grid projection at a nonconforming interface.}
+\label{fig:glue_layers}
+\end{figure}
+
+Given its clear importance, the compatibility condition (\ref{eq:compat}) is used as an explicit
 constraint when constructing the projection operators $\pmb{P}_{f2g}$ and $\pmb{P}_{g2f}$
 themselves. The construction, which is laid out in further detail in \cite{kozdon2016stable},
-employs a Legendre polynomial basis on the glue grid, and defines interior and boundary
-accuracy conditions when projecting from grid to glue (and vice versa) that match those
-of corresponding SBP diagonal-norm operators of the same order.
+defines interior and boundary accuracy conditions when projecting from grid to glue
+(and vice versa) that match those of corresponding SBP diagonal-norm operators of the
+same order. A pictorial representation of this process is given by Figure \ref{fig:projection_layout}.
 
-These conditions, in conjunction with symmetry conditions and a set of unknowns as
-defined in the figure below, result in a \emph{non-square} system featuring more
-unknowns than constraints, in particular near the boundary stencils. Given the
-underdetermined nature of the system, the authors then use an optimization procedure
-aimed at minimizing the distance between the nearest eigenvalues of $\pmb{B} =
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/projection_layout.png}
+\caption{Images demonstrating the interior constraints for the projection mimicking SBP4-2
+	 operators. Left: projection of modal coefficients of the piecewise polynomial solution
+	 on the four surrounding glue grid intervals to the central grid point in the stencil must
+	 result in a correct Legendre polynomial solution at point $k$ up to the interior order.
+	 Right: projection of the solutions at the four points surrounding interval $k$ to the
+	 modal coefficients on interval $k$ must produce the correct piecewise approximation of
+	 Legendre polynomials up to interior order on that interval.}
+\label{fig:projection_layout}
+\end{figure}
+
+These conditions, in conjunction with symmetry conditions, result in a \emph{non-square}
+system featuring more unknowns than constraints, in particular near the boundary stencils.
+Given the underdetermined nature of the system, the authors then use an optimization
+procedure aimed at minimizing the distance between the nearest eigenvalues of $\pmb{B} =
 \pmb{P}_{f2g}\pmb{P}_{g2f}$ to produce the final projection operators for a given order.
-
-With all of this borne in mind, our primary goal for the interface method, then,
-is to obtain projection operators that maintain the provable energy stability
-of Kozdon and Wilcox, which are also
-\begin{itemize}
-\item{obtained from a construction procedure that is demonstrably \emph{unisolvent},
-      with an equal number of constraints and unknowns resulting in a square system
-      of equations}
-\item{therefore not based on optimization}
-\item{able to provide "round-trip" fidelity of projection, meaning that projection
-      from the grid to the glue, and then back to the grid, results in a solution
-      identical to the starting point.}
-\end{itemize}
-The strategy for pursuance of these goals begins with consideration of the
-\emph{interior} projection operator only, given the simplicity of the existing
-interior stencil relative to the boundary (which features many more unknowns).
-Noting also that the compatibility condition disallows us from obtaining
-exact "round-trip" projection, other conditions may be considered based
-on further manipulation or restructuring of the edge dissipation relations
-\eref{eq:sbp_diss} and \eref{eq:dg_diss}.
+As mentioned in Section \ref{sec:hybrid_goals}, our goal is to eliminate this optimization
+procedure, either by imposing more constraints (such as steps towards round-trip projection
+fidelity) or removing extraneous unknowns.
 
 %===========================================================================
-\subsection{Validation}
+\subsection{Validation Plan}
 
 The test problem for validation will match that of \cite{kozdon2016stable},
 modeling the two-dimensional acoustic wave equation in first-order form with
