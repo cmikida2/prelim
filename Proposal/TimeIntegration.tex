@@ -1,4 +1,4 @@
-\subsection{Motivation \& Background}
+\subsection{Motivation \& Background} \label{sec:timeint_bg}
 
 %\subsubsection{Historical Context}
 
@@ -47,9 +47,8 @@ implicitly and explicitly advanced components within a multi-rate framework.
 %\subsubsection{Goals, Bounds, and Impact}
 
 The primary goal of this section of the thesis is demonstration of a novel
-time integration scheme driving a canonical or especially demonstrative
-reacting flow problem (ideally one that points directly to real-world impact)
-with improved efficacy identified by either superior accuracy and stability or
+time integration scheme driving a demonstrative reacting flow problem
+with improved efficacy identified by either superior accuracy and stability and/or
 faster performance relative to existing methods. The integration project
 being undertaken aims to augment the capabilities of the multi-rate integrators
 developed in \cite{mikida2019multi}, adding the ability to treat certain
@@ -384,7 +383,8 @@ a_{ss}(f,s) &= \left(\begin{array}{c} -\frac{\partial}{\partial x_{j}}(\rho u_{j
                                       -\frac{\partial}{\partial x_{j}}((\rho E)u_{j} + q_{j} - u_{i}\tau_{ij}) \end{array} \right)
 \end{align}
 As our treatment of this set of equations with multi-rate integration develops,
-so too will our approach to defining the additive terms of \eref{eq:mr_reacting}.
+so too will our approach to defining the additive terms of \eref{eq:mr_reacting},
+as well as which state variables are deserving of fast or slow treatment.
 
 \subsubsection{Implicit Adams Methods and Extension to Multi-rate}
 
@@ -492,7 +492,7 @@ differential-algebraic approaches that directly satisfy the ideal gas and
 constant internal energy constraints) are used.
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/autoignition_drift.png}
+\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/autoignition_drift.png}
 	\caption{Temperature profiles (left) and log of relative ideal gas law residual (right)
 		 for advancement of homogeneous H2-O2 autoignition example (employing the nine-species
 		 San Diego mechanism) using a fully differential approach (blue) versus a differential-algebraic
@@ -568,11 +568,18 @@ with the weighted root-mean-square norm then being given by
 \begin{align}
 \|E\|_{wrms} = \left(\sum_{i=1}^{N} \frac{1}{N} (w_{i}(s_{q+1,i} - s_{q,i}))^2 \right)^{1/2},
 \end{align}
-where $s_{q}$ is the state estimate obtained using an order-$q$ scheme. Based on whether
-$\|E\|_{wrms}$ is less than or greater than 1, the timestep
-is modified in the same manner as above.
+where $s_{q,i}$ is the $i$-th component of the state estimate obtained using an order-$q$ scheme.
+The timestep is \emph{decreased} if $\|E\|_{wrms}$ is greater than 1 via
+\begin{align}
+\Delta t = 0.9\Delta t (\|E\|_{wrms})^{-1/q}
+\end{align}
+and \emph{increased} if $\|E\|_{wrms}<1$ via
+\begin{align}
+\Delta t = 0.9\Delta t (\|E\|_{wrms})^{-1/(q+1)}
+\end{align}
 
-Regardless of the error norm used, this added capability alone presents a number of
+%Regardless of the error norm used, this added capability alone presents a number of
+As mentioned in Section \ref{sec:timeint_bg}, this added capability presents a number of
 questions in terms of how best to accomplish this error control. In particular,
 step ratio adjustment \emph{in situ}, rather than timestep adjustment, to meet error
 needs provides an implementation challenge in terms of code generation of these
@@ -596,7 +603,7 @@ pre-exponential factors in the Arrhenius reaction rates, and for the fluid, we c
 the magnitude of the initial crossflow velocity).
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/hyperbolic_tangent_air.png}
+\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/hyperbolic_tangent_air.png}
 \caption{Perturbed initial condition of the hyperbolic tangent example - sea-level air.}
 \label{fig:hyperbolic_cold_rhov2}
 \end{figure}
@@ -623,7 +630,7 @@ based in large part on an example problem bundled with the software, is given in
 Figure \ref{fig:cantera_reactors}.
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/cantera_reactors_soln.png}
+\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/cantera_reactors_soln.png}
 \caption{Cantera two-reactor example problem. The solution shown is obtained using
 	 Cantera's internal reactor system integrator, which is based on the same
 	 BDF algorithm employed by CVODE. The piston velocity is initially zero,
@@ -647,8 +654,7 @@ IMEX integrator using PyJac analytical Jacobians, is given in the next section.
 
 \subsubsection{Risk Mitigation}
 
-An important question to ask amidst all of these promises is: 
-\textbf{what if this doesn't work out?} Assuming demonstration of improved
+Assuming demonstration of improved
 performance or accuracy of the \emph{multi-rate} integrators over the
 state-of-the-art is for reasons unforseen impossible, a "fallback" takeaway
 would be demonstration of improvement over a low-order splitting
@@ -669,10 +675,9 @@ of equivalence ratios $\phi$, we see suitable agreement of less than 3\% error, 
 that the reacting flow equations - and in particular the chemical source terms and Jacobians -
 are correctly implemented and ready for both further experimentation with multi-rate
 timescale splitting and a more thorough analysis of performance.
-
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/flame_figures.png}
+\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/flame_figures.png}
 \caption{Figures showing the temperature profile of the one-dimensional free-flame example
          at initial condition (left) and after 0.0025 seconds (right).}
 \label{fig:freeflame_output}

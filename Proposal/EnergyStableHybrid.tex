@@ -43,7 +43,6 @@ driving the product of the projection matrices closer to an identity operation.
 Furthermore, the method was not extended to three dimensions, and the method is reduced
 to first order accuracy if the continuous coordinate transforms on either side of the
 interface are dissimilar.
-
 \begin{figure}
 \centering
 \includegraphics[width=0.7\linewidth,trim=4 4 4 4,clip]{figures/nonconforming_samples.png}
@@ -51,7 +50,6 @@ interface are dissimilar.
 	 Right: Kozdon and Wilcox \cite{kozdon2016stable}}
 \label{fig:nonconforming_samples}
 \end{figure}
-
 Since, Friedrich et. al \cite{friedrich2018conservative} extended the
 method(s) of Kozdon and Wilcox to make the
 projection process degree-preserving (a characteristic that had been
@@ -87,7 +85,7 @@ even in projection from one grid into the intermediate glue layer (see Section \
 The strategy for pursuance of these goals begins with consideration of the
 \emph{interior} projection operator only, given the simplicity of the existing
 interior stencil relative to the boundary (which features many more unknowns).
-Noting also that the compatibility condition (discussed in Section \ref{sec:interface}) to be the
+Noting also that the compatibility condition (discussed in Section \ref{sec:interface} to be the
 critical condition for proving a stable interface) disallows us from obtaining
 exact "round-trip" projection, other conditions may be considered based
 on further manipulation or restructuring of the edge energy dissipation relations,
@@ -139,7 +137,7 @@ energy $E$ of each discretization block:
 \begin{align}
 \mcl{E} = \sum_{blocks} E
 \end{align}
-The definitions of both the energies and the energy dissipation rates for each
+The definitions of the energy dissipation rates for each
 block (each having its own spatial discretization), are given in subsequent
 sections.
 
@@ -177,9 +175,8 @@ Note that these SBP operators do not alone guarantee strict
 stability for an initial boundary value problem. We must also apply the boundary conditions using a
 formulation that permits an energy estimate. More information on these boundary conditions, called
 simultaneous approximation term (SAT) boundary conditions, can be found at \cite{svard2007stable},
-\cite{svard2008stable}, and \cite{bodony2010accuracy}.
-
-More information on SBP operators of various order, including the coefficients themselves, can be found
+\cite{svard2008stable}, and \cite{bodony2010accuracy}. Additionally, more information on SBP operators
+of various order, including the coefficients themselves, can be found
 in \cite{strand1994summation}, \cite{carpenter1993time}, \cite{mattsson2004stable}. For this work,
 we will employ diagonal-norm SBP operators for the finite difference discretizations.
 
@@ -380,14 +377,14 @@ Edge-projected pressures are similarly defined as
 \end{align}
 In these expressions, $\pmb{L}_{K}$ and $\pmb{L}_{K}^{T}$ are operators
 which take volume terms to edge $K$ of the element and edge $K$ terms to
-the volume respectively. $D_{1}$ and $D_{2}$ are the reference
+the volume respectively. $\pmb{D}_{1}$ and $\pmb{D}_{2}$ are the reference
 element differentiation matrices for the two reference coordinate directions.
-The projection matrices $P_{c}$ and $P_{bc}$ project from the volume and edge
+The projection matrices $\pmb{P}_{c}$ and $\pmb{P}_{bc}$ project from the volume and edge
 approximations to the volume and edge cubature points, respectively. The matrices
-$\Omega_{c}$ and $\Omega_{bc}$ are diagonal matrices of the integration weights for
+$\pmb{\Omega}_{c}$ and $\pmb{\Omega}_{bc}$ are diagonal matrices of the integration weights for
 the volume and an edge, respectively, defined at the cubature locations. A critical
 condition assumed by \cite{kozdon2016stable} for stability of their method is that
-$\Omega_{c}$ and $\Omega_{bc}$ are positive definite. Finally, the
+$\pmb{\Omega}_{c}$ and $\pmb{\Omega}_{bc}$ are positive definite. Finally, the
 element mass matrices in the discretization are defined as
 \begin{alignat}{2}
   \pmb{M}_{J}  &= \pmb{P}_{c}^{T} \pmb{\Omega}_{c} \pmb{J} P_{c},\quad&
@@ -395,7 +392,8 @@ element mass matrices in the discretization are defined as
 		  \frac{\pmb{\partial \xi_{i}}}{\pmb{\partial x_{j}}} \pmb{P}_{c}.
 \end{alignat}
 Here the diagonal matrices $\pmb{J}$ and $\pmb{\frac{\partial \xi_{i}}{\partial x_{j}}}$
-are defined identically to \eref{eq:sbp_jac} and defined at the cubature points. The diagonal matrices $\pmb{S}_{JK}$ and $\pmb{n}_{iK}$ are defined in the same way at the cubature
+are defined identically to \eref{eq:sbp_jac} and defined at the cubature points.
+The diagonal matrices $\pmb{S}_{JK}$ and $\pmb{n}_{iK}$ are defined in the same way at the cubature
 points.
 
 %Defining the energy in a DG element as
@@ -472,7 +470,7 @@ $\pmb{P}_{f2g}$ can also be generalized as projection operators to and from the 
 glue layer.
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/glue_layers.png}
+\includegraphics[width=0.7\linewidth,trim=4 4 4 4,clip]{figures/glue_layers.png}
 \caption{Image from Kozdon and Wilcox \cite{kozdon2016stable} demonstrating the glue
          layers present in grid-to-grid projection at a nonconforming interface.}
 \label{fig:glue_layers}
@@ -485,7 +483,7 @@ defines interior and boundary accuracy conditions when projecting from grid to g
 same order. A pictorial representation of this process is given by Figure \ref{fig:projection_layout}.
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/projection_layout.png}
+\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/projection_layout.png}
 \caption{Images demonstrating the interior constraints for the projection mimicking SBP4-2
 	 operators. Left: projection of modal coefficients of the piecewise polynomial solution
 	 on the four surrounding glue grid intervals to the central grid point in the stencil must
@@ -548,7 +546,7 @@ of the SBP method, as well as the order of the projection across the interface,
 is specified to match the order of the discontinous Galerkin method.
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/split_domain_wave_double.png}
+\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/split_domain_wave_double.png}
 \caption{Pressure initial condition for test problem, also showing split-domain
 	 discretization. The right figure coarsens the wireframe to better show the
 	 individual triangular DG elements.}
@@ -572,7 +570,7 @@ Upon fulfillment of these goals, extension to three dimensions will be considere
 Current work on this project has thus far amounted to reconstruction of the
 operators of Kozdon and Wilcox, application of these operators to simple, periodic
 SBP-to-SBP advection examples, and verification of their accuracy and energy-stability
-properties when focusing on the use of the interior projection stencil (see Figure \ref{fig:advection_projection}.
+properties when focusing on the use of the interior projection stencil (see Figure \ref{fig:advection_projection}).
 Having both verified and better understood the construction and capabilities of these operators,
 the question then becomes improving upon them, and the chief task to that end is
 better understanding the importance of the compatibility condition in both the
@@ -582,7 +580,7 @@ is whether there are alternative conditions on the grid-to-glue projection that
 will provide similar characteristics.
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/advection_projection.png}
+\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/advection_projection.png}
 \caption{Application of the glue layer projection theory of \cite{kozdon2016stable} to a
 	 scalar advection example with an advection speed of 1. The purple line in the figure
 	 on the left is a glue layer to which we project the solution on the leftmost grid points
