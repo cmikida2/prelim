@@ -9,7 +9,7 @@ all : ThesisProposal.pdf
 view :
 	open ThesisProposal.pdf
 
-ThesisProposal.pdf : ThesisProposal.tex preamble.fmt ThesisProposal.bbl ThesisProposal.blg
+ThesisProposal.pdf : ThesisProposal.tex ThesisProposal.bbl ThesisProposal.blg
 	$(TEX) ThesisProposal.tex
 
 ThesisProposal.bbl ThesisProposal.blg : bibliography.bib ThesisProposal.aux

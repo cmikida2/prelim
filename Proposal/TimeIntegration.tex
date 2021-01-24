@@ -1,6 +1,6 @@
 \subsection{Motivation \& Background}
 
-\subsubsection{Historical Context}
+%\subsubsection{Historical Context}
 
 In the simulation of reacting flows, the compressible Navier-Stokes
 equations are augmented to include equations governing the rate of
@@ -44,7 +44,7 @@ multi-rate schemes \cite{constantinescu2010extrapolated},
 \cite{constantinescu2013extrapolated}, but failed to introduce a scheme featuring both
 implicitly and explicitly advanced components within a multi-rate framework.
 
-\subsubsection{Goals, Bounds, and Impact}
+%\subsubsection{Goals, Bounds, and Impact}
 
 The primary goal of this section of the thesis is demonstration of a novel
 time integration scheme driving a canonical or especially demonstrative
@@ -65,15 +65,15 @@ the mass fractions are at or near chemical equilibrium.
 
 Perhaps the next most prominent goal is a thorough investigation of
 the design space presented by the multi-rate framework we will use for time
-integration. The design choices inherent to this
-scheme include:
+integration. The design choices inherent to this scheme are summarized in part
+in Section \ref{sec:multirate}, but also include:
 \begin{itemize}
-\item{Which right-hand side components in the governing equations should be treated as
-      fast-evolving components, and which should be treated as slow-evolving components}
-\item{Evaluation order ("fastest-first" vs. "slowest-first")}
-\item{Re-extrapolation}
-\item{Inclusion of additional history beyond order requirements (shown in \cite{mikida2019multi}
-      to provide real-axis stability improvement)}
+%\item{Which right-hand side components in the governing equations should be treated as
+%      fast-evolving components, and which should be treated as slow-evolving components}
+%\item{Evaluation order ("fastest-first" vs. "slowest-first")}
+%\item{Re-extrapolation}
+%\item{Inclusion of additional history beyond order requirements (shown in \cite{mikida2019multi}
+%      to provide real-axis stability improvement)}
 \item{Which solution components to include in error estimation for adaptive timestep
       control}
 \item{Whether error control is accomplished through timestep control or step ratio control}
@@ -146,12 +146,15 @@ In these equations, $\rho$ is the fluid density, $u_{i}$ is the velocity in the 
 $\delta_{ij}$ is the Kronecker delta, $P$ is the pressure, $T$ is the temperature, $R$ is the universal gas constant, and $Y_{k}$ is the mass fraction of
 species $k$. $[C]_{k}$ is the concentration of species $k$ in the gas mixture, $C_{v,k}(T)$ is the specific heat at constant volume
 of species $k$ at temperature $T$, and $U_{k}(T)$ is the internal energy of species $k$ at temperature $T$. These quantities
-are defined using the NASA 9-coefficient polynomial parameterization \cite{mcbride2002nasa}, such that
-\begin{align}
-\frac{C_{v,k}(T)}{R} &= a_{0} + a_{1}T + a_{2}T^{2} + a_{3}T^{3} + a_{4}T^{4} - 1 \\
-\frac{U_{k}(T)}{RT} &= a_{0} + \frac{a_{1}}{2}T + \frac{a_{2}}{3}T^{2} + \frac{a_{3}}{4}T^{3} + \frac{a_{4}}{5}T^{4} + \frac{a_{5}}{T} - 1,
-\end{align}
-where the $a$ coefficients are defined per-species for an arbitrary number of temperature regions.
+are defined using the NASA 9-coefficient polynomial parameterization \cite{mcbride2002nasa}.
+%%%%% CANDIDATE FOR REMOVAL
+%are defined using the NASA 9-coefficient polynomial parameterization \cite{mcbride2002nasa}, such that
+%\begin{align}
+%\frac{C_{v,k}(T)}{R} &= a_{0} + a_{1}T + a_{2}T^{2} + a_{3}T^{3} + a_{4}T^{4} - 1 \\
+%\frac{U_{k}(T)}{RT} &= a_{0} + \frac{a_{1}}{2}T + \frac{a_{2}}{3}T^{2} + \frac{a_{3}}{4}T^{3} + \frac{a_{4}}{5}T^{4} + \frac{a_{5}}{T} - 1,
+%\end{align}
+%where the $a$ coefficients are defined per-species for an arbitrary number of temperature regions.
+%%%%% END CANDIDATE FOR REMOVAL
 
 Returning to the Navier-Stokes equations \eref{eq:consmass} - \eref{eq:pres}, $N_{sp}$ is the number of species
 in the chemical mechanism, $W_{k}$ is the molecular weight of species $k$, $n$ is the number of moles of the gas
@@ -161,40 +164,44 @@ is the viscous stress tensor, $\varphi_{ki}$ are the diffusion fluxes, and $q_{j
 q_{j} = - \frac{\partial (\lambda T)}{\partial x_{j}} + h_{k}\varphi_{kj}.
 \end{align}
 In this expression, $\lambda$ is the thermal conductivity, and $h_{k}$ is the enthalpy of species $k$.
-As for the diffusion fluxes, these are defined using a mixture-averaged approach - that is, $\varphi_{ki}$
-is given by
-\begin{align}
-\varphi_{ki} = \varphi_{ki}^{*} + \varphi_{ki}^{c},
-\end{align}
-where $\varphi_{ki}^{*}$ is the mixture-averaged approximation, and $\varphi_{ki}^{c}$
-is a correction term to ensure mass conservation. The mixture-averaged approximation
-is defined by
-\begin{align}
-\varphi_{ki}^{*} = -\rho D_{k,m}\frac{W_{k}}{W} \frac{\partial X_{k}}{\partial x_{i}}
-\end{align}
-where $D_{k,m}$ is the mixture-averaged diffusivity of species $k$, $W$ is the mean
-molecular weight, and $X_{k}$ is the mole fraction of species $k$. Finally, the
-correction term is given by
-\begin{align}
-\varphi_{ki}^{c} = -Y_{k} \sum_{n=1}^{N_{sp}} \varphi_{ni}^{*}
-\end{align}
+As for the diffusion fluxes, these are defined using a mixture-averaged approach with a
+correction term to ensure mass conservation (\cite{smooke2013computation}, \cite{poinsot2005theoretical}, \cite{kee2005chemically}).
+%%%%% CANDIDATE FOR REMOVAL
+%As for the diffusion fluxes, these are defined using a mixture-averaged approach - that is, $\varphi_{ki}$
+%is given by
+%\begin{align}
+%\varphi_{ki} = \varphi_{ki}^{*} + \varphi_{ki}^{c},
+%\end{align}
+%where $\varphi_{ki}^{*}$ is the mixture-averaged approximation, and $\varphi_{ki}^{c}$
+%is a correction term to ensure mass conservation. The mixture-averaged approximation
+%is defined by
+%\begin{align}
+%\varphi_{ki}^{*} = -\rho D_{k,m}\frac{W_{k}}{W} \frac{\partial X_{k}}{\partial x_{i}}
+%\end{align}
+%where $D_{k,m}$ is the mixture-averaged diffusivity of species $k$, $W$ is the mean
+%molecular weight, and $X_{k}$ is the mole fraction of species $k$. Finally, the
+%correction term is given by
+%\begin{align}
+%\varphi_{ki}^{c} = -Y_{k} \sum_{n=1}^{N_{sp}} \varphi_{ni}^{*}
+%\end{align}
+%%%%% END CANDIDATE FOR REMOVAL
 
 %%%%% CANDIDATE FOR CHANGE/REMOVAL
 
-In this set of governing equations \eref{eq:consmass} - \eref{eq:pres}, the mass fraction source term
-on the right side of equation \eref{eq:conssp} is typically observed
-to be stiff relative to the surrounding equations governing the motion of the gas mixture
-and the change in its physical properties. This presents a time integration problem in
-that this term alone typically dictates either an oppressively low timestep or the need for
-an implicit approach, often using tools such as CVODE. In practice, fluid solvers
-also often decouple an explicit treatment of the Navier-Stokes equations \eref{eq:consmass} - \eref{eq:conse}
-from the implicit treatment of the chemical kinetics, resulting in a splitting
-approach that is at best first or second order in time.
+%In this set of governing equations \eref{eq:consmass} - \eref{eq:pres}, the mass fraction source term
+%on the right side of equation \eref{eq:conssp} is typically observed
+%to be stiff relative to the surrounding equations governing the motion of the gas mixture
+%and the change in its physical properties. This presents a time integration problem in
+%that this term alone typically dictates either an oppressively low timestep or the need for
+%an implicit approach, often using tools such as CVODE. In practice, fluid solvers
+%also often decouple an explicit treatment of the Navier-Stokes equations \eref{eq:consmass} - \eref{eq:conse}
+%from the implicit treatment of the chemical kinetics, resulting in a splitting
+%approach that is at best first or second order in time.
 
-The topic of this section of the thesis, then, is to answer the following
-research question: \textbf{can we derive performance and/or temporal accuracy benefits
-from an application of multi-rate Adams integrators (implicit and/or explicit) to this
-set of governing equations?}
+%The topic of this section of the thesis, then, is to answer the following
+%research question: \textbf{can we derive performance and/or temporal accuracy benefits
+%from an application of multi-rate Adams integrators (implicit and/or explicit) to this
+%set of governing equations?}
 
 %%%%% END CANDIDATE FOR CHANGE/REMOVAL
 
@@ -236,22 +243,22 @@ y(t_{i+1}) = y(t_{i}) +& \alpha_{1}F(t_{i-n},y_{i-n}) + \alpha_{2}F(t_{i-n-1},y_
 +& \cdots + \alpha_{n}F(t_{i},y_{i}). \label{eq:ab_general}
 \end{align}
 %%%%% CANDIDATE FOR REMOVAL
-Clearly, the length of the past history needed to calculate a step (and, thus,
-the memory required) influences the order of accuracy attained. In \cite{mikida2019multi},
-it is also shown that increasing the amount of tracked and interpolated history
-values beyond the explicit order requirement can also provide certain stability
-benefits.
+%Clearly, the length of the past history needed to calculate a step (and, thus,
+%the memory required) influences the order of accuracy attained. In \cite{mikida2019multi},
+%it is also shown that increasing the amount of tracked and interpolated history
+%values beyond the explicit order requirement can also provide certain stability
+%benefits.
 
-An alternative time integration method is required for the first few time steps
-(the exact number of which is dependent on the number of history values needed)
-in order to establish right-hand side history and "bootstrap" the method.  We
-use a third-order Runge-Kutta (RK3) integrator~\cite{heun1900neue} to bootstrap
-the third-order AB methods, whereas a fourth-order Runge-Kutta (RK4)
-integrator~\cite{kutta1901beitrag} is used to bootstrap the fourth-order AB
-methods.
+%An alternative time integration method is required for the first few time steps
+%(the exact number of which is dependent on the number of history values needed)
+%in order to establish right-hand side history and "bootstrap" the method.  We
+%use a third-order Runge-Kutta (RK3) integrator~\cite{heun1900neue} to bootstrap
+%the third-order AB methods, whereas a fourth-order Runge-Kutta (RK4)
+%integrator~\cite{kutta1901beitrag} is used to bootstrap the fourth-order AB
+%methods.
 %%%%% END CANDIDATE FOR REMOVAL
 
-\subsubsection{Multi-rate Adams Methods}
+\subsubsection{Multi-rate Adams Methods} \label{sec:multirate}
 
 We now describe a multi-rate generalization of the scheme, making use of the
 algorithm introduced in~\cite{gear1984multirate}.  We consider the following
@@ -280,69 +287,74 @@ Within this two-component scheme, a few design choices are available:
 	re-extrapolate the slow state after additional state and right-hand
 	side information is gathered at the micro-timestep level.
 \end{itemize}
-%%%%% CANDIDATE FOR REMOVAL
 Empirical observations on the effects of these choices are made
-in \cite{klockner2010high}. It is useful to step through a brief example
-of a multi-rate Adams-Bashforth integrator, using a system with a
-fast component requiring twice as many timesteps as the slow component
-to remain well-resolved ($\text{SR}=2$).  We lay out the steps of a third-order
-fastest-first multi-rate Adams-Bashforth scheme with no re-extrapolation, assuming that $a_{s}$
-evolves at the slow rate (macro-timestep $H = 2h$) and $a_{f}$ evolves at the
-fast rate (micro-timestep $h$).  $\hat{a}$ denotes extrapolants of the
-right-hand side functions as polynomial functions of both time $t$ and the set
-of history values $\vec{a}_{\text{hist}}$: $\hat{a} = P(t,
-\vec{a}_{\text{hist}})$.  These polynomials approximating the evolution of
-$a_{f}$ and $a_{s}$ in time are what we will integrate to march $a_{f}$ and
-$a_{s}$, and will be updated to replace older history values with new
-right-hand side evaluations during the course of integration through a
-macro-timestep $H$.  We assume availability of right-hand side histories to
-start the AB method.
-\begin{itemize}[leftmargin=0.5in]
-\item[Step 1:] Form the polynomial extrapolants we will integrate, per the AB
-	methods described in the previous subsection:	
-\begin{align}
-\hat{a}_{f}(t) = P\Big(t, [a_{f}(f(t_{i-2}), s(t_{i-2})), a_{f}(f(t_{i-1}), s(t_{i-1})), a_{f}(f(t_{i}), s(t_{i}))]\Big) \notag \\
-\hat{a}_{s}(t) = P\Big(t, [a_{s}(f(t_{i-4}), s(t_{i-4})), a_{s}(f(t_{i-2}), s(t_{i-2})), a_{s}(f(t_{i}), s(t_{i}))]\Big) \notag
-\end{align}	
-	The right-hand side history
-	values of $a_{f}$ (used to form $\hat{a}_{f}$) have been obtained at
-	time points $t_{i - 2} = t - 2h$, $t_{i-1} = t - h$, and current time
-	$t_{i} = t$, whereas the right-hand side history values of $a_{s}$
-	(used to form $\hat{a}_{s}$) have been obtained at time points $t_{i-4}
-	= t - 2H$, $t_{i-2} = t - H$, and $t_{i} = t$.
-\item[Step 2:] March both $f$ and $s$ to time $t_{i+1}$ by integrating the
-	polynomial extrapolants $\hat{a}_{s}(t)$ and $\hat{a}_{f}(t)$ formed in
-	Step~1:
-\begin{align}
-f(t_{i+1}) = f(t_{i}) + \int_{t_{i}}^{t_{i+1}} \hat{a}_{f}(\tau) d\tau, \notag \\
-s(t_{i+1}) = s(t_{i}) + \int_{t_{i}}^{t_{i+1}} \hat{a}_{s}(\tau) d\tau. \notag
-\end{align}
-This results in a set of intermediate values $f(t_{i+1})$ and $s(t_{i+1})$.
-\item[Step 3:] Evaluate the fast right-hand side $a_{f}(f(t_{i+1}), s(t_{i+1}))$.
-\item[Step 4:] Update the set of right-hand side history values for $a_{f}$ to include these new values, and construct a new extrapolant $\hat{a}_{f}$:
-\begin{align}
-\hat{a}_{f}(t) = P\left(t, [a_{f}(f(t_{i-1}), s(t_{i-1})), a_{f}(f(t_{i}), s(t_{i})), a_{f}(f(t_{i+1}), s(t_{i+1}))]\right). \notag
-\end{align}
-\item[Step 5:] March $s$ to time $t_{i+2}$ by integrating the extrapolant formed in Step~1:
-\begin{align}
-s(t_{i+2}) = s(t_{i}) + \int_{t_{i}}^{t_{i+2}} \hat{a}_{s}(\tau) d\tau. \notag
-\end{align}
-\item[Step 6:] March $f$ to time $t_{i+2}$ by integrating the extrapolant formed in Step~3:
-\begin{align}
-f(t_{i+2}) =  f(t_{i+1}) + \int_{t_{i+1}}^{t_{i+2}} \hat{a}_{f}(\tau) d\tau. \notag
-\end{align}
-\item[Step 7:] Evaluate $a_{f}(f(t_{i+2}), s(t_{i+2}))$ and $a_{s}(f(t_{i+2}), s(t_{i+2}))$ and update extrapolants:
- \begin{align}
-\hat{a}_{f}(t) = P\Big(t, [a_{f}(f(t_{i}), s(t_{i})), a_{f}(f(t_{i+1}), s(t_{i+1})), a_{f}(f(t_{i+2}), s(t_{i+2}))]\Big), \notag \\
-\hat{a}_{s}(t) = P\Big(t, [a_{s}(f(t_{i-2}), s(t_{i-2})), a_{s}(f(t_{i}), s(t_{i})), a_{s}(f(t_{i+2}), s(t_{i+2}))]\Big). \notag
-\end{align}
-\end{itemize}
-The scheme evaluates the fast-evolving right-hand side $a_{f}$ twice per
-macro-timestep $H$, whereas the slowly-evolving right-hand side $a_{s}$ is only
-evaluated once. The code implementing this method, as well as other methods
+in \cite{klockner2010high}. The code implementing this method, as well as other methods
 within the multi-rate Adams framework, is generated by the Python packages 
 Leap \cite{Leap2020} and Dagrt \cite{Dagrt2020}, and all time integration scheme
 development is occurring via implementation in Leap.
+%%%%% CANDIDATE FOR REMOVAL
+%Empirical observations on the effects of these choices are made
+%in \cite{klockner2010high}. It is useful to step through a brief example
+%of a multi-rate Adams-Bashforth integrator, using a system with a
+%fast component requiring twice as many timesteps as the slow component
+%to remain well-resolved ($\text{SR}=2$).  We lay out the steps of a third-order
+%fastest-first multi-rate Adams-Bashforth scheme with no re-extrapolation, assuming that $a_{s}$
+%evolves at the slow rate (macro-timestep $H = 2h$) and $a_{f}$ evolves at the
+%fast rate (micro-timestep $h$).  $\hat{a}$ denotes extrapolants of the
+%right-hand side functions as polynomial functions of both time $t$ and the set
+%of history values $\vec{a}_{\text{hist}}$: $\hat{a} = P(t,
+%\vec{a}_{\text{hist}})$.  These polynomials approximating the evolution of
+%$a_{f}$ and $a_{s}$ in time are what we will integrate to march $a_{f}$ and
+%$a_{s}$, and will be updated to replace older history values with new
+%right-hand side evaluations during the course of integration through a
+%macro-timestep $H$.  We assume availability of right-hand side histories to
+%start the AB method.
+%\begin{itemize}[leftmargin=0.5in]
+%\item[Step 1:] Form the polynomial extrapolants we will integrate, per the AB
+%	methods described in the previous subsection:	
+%\begin{align}
+%\hat{a}_{f}(t) = P\Big(t, [a_{f}(f(t_{i-2}), s(t_{i-2})), a_{f}(f(t_{i-1}), s(t_{i-1})), a_{f}(f(t_{i}), s(t_{i}))]\Big) \notag \\
+%\hat{a}_{s}(t) = P\Big(t, [a_{s}(f(t_{i-4}), s(t_{i-4})), a_{s}(f(t_{i-2}), s(t_{i-2})), a_{s}(f(t_{i}), s(t_{i}))]\Big) \notag
+%\end{align}	
+%	The right-hand side history
+%	values of $a_{f}$ (used to form $\hat{a}_{f}$) have been obtained at
+%	time points $t_{i - 2} = t - 2h$, $t_{i-1} = t - h$, and current time
+%	$t_{i} = t$, whereas the right-hand side history values of $a_{s}$
+%	(used to form $\hat{a}_{s}$) have been obtained at time points $t_{i-4}
+%	= t - 2H$, $t_{i-2} = t - H$, and $t_{i} = t$.
+%\item[Step 2:] March both $f$ and $s$ to time $t_{i+1}$ by integrating the
+%	polynomial extrapolants $\hat{a}_{s}(t)$ and $\hat{a}_{f}(t)$ formed in
+%	Step~1:
+%\begin{align}
+%f(t_{i+1}) = f(t_{i}) + \int_{t_{i}}^{t_{i+1}} \hat{a}_{f}(\tau) d\tau, \notag \\
+%s(t_{i+1}) = s(t_{i}) + \int_{t_{i}}^{t_{i+1}} \hat{a}_{s}(\tau) d\tau. \notag
+%\end{align}
+%This results in a set of intermediate values $f(t_{i+1})$ and $s(t_{i+1})$.
+%\item[Step 3:] Evaluate the fast right-hand side $a_{f}(f(t_{i+1}), s(t_{i+1}))$.
+%\item[Step 4:] Update the set of right-hand side history values for $a_{f}$ to include these new values, and construct a new extrapolant $\hat{a}_{f}$:
+%\begin{align}
+%\hat{a}_{f}(t) = P\left(t, [a_{f}(f(t_{i-1}), s(t_{i-1})), a_{f}(f(t_{i}), s(t_{i})), a_{f}(f(t_{i+1}), s(t_{i+1}))]\right). \notag
+%\end{align}
+%\item[Step 5:] March $s$ to time $t_{i+2}$ by integrating the extrapolant formed in Step~1:
+%\begin{align}
+%s(t_{i+2}) = s(t_{i}) + \int_{t_{i}}^{t_{i+2}} \hat{a}_{s}(\tau) d\tau. \notag
+%\end{align}
+%\item[Step 6:] March $f$ to time $t_{i+2}$ by integrating the extrapolant formed in Step~3:
+%\begin{align}
+%f(t_{i+2}) =  f(t_{i+1}) + \int_{t_{i+1}}^{t_{i+2}} \hat{a}_{f}(\tau) d\tau. \notag
+%\end{align}
+%\item[Step 7:] Evaluate $a_{f}(f(t_{i+2}), s(t_{i+2}))$ and $a_{s}(f(t_{i+2}), s(t_{i+2}))$ and update extrapolants:
+% \begin{align}
+%\hat{a}_{f}(t) = P\Big(t, [a_{f}(f(t_{i}), s(t_{i})), a_{f}(f(t_{i+1}), s(t_{i+1})), a_{f}(f(t_{i+2}), s(t_{i+2}))]\Big), \notag \\
+%\hat{a}_{s}(t) = P\Big(t, [a_{s}(f(t_{i-2}), s(t_{i-2})), a_{s}(f(t_{i}), s(t_{i})), a_{s}(f(t_{i+2}), s(t_{i+2}))]\Big). \notag
+%\end{align}
+%\end{itemize}
+%The scheme evaluates the fast-evolving right-hand side $a_{f}$ twice per
+%macro-timestep $H$, whereas the slowly-evolving right-hand side $a_{s}$ is only
+%evaluated once. The code implementing this method, as well as other methods
+%within the multi-rate Adams framework, is generated by the Python packages 
+%Leap \cite{Leap2020} and Dagrt \cite{Dagrt2020}, and all time integration scheme
+%development is occurring via implementation in Leap.
 %%%%% END CANDIDATE FOR REMOVAL
 
 To fully realize the potential multi-rate formulation for reacting
@@ -376,6 +388,31 @@ so too will our approach to defining the additive terms of \eref{eq:mr_reacting}
 
 \subsubsection{Implicit Adams Methods and Extension to Multi-rate}
 
+%%%%% CANDIDATE FOR REMOVAL
+%The concepts in the above sections, both single- and multi-rate, are
+%easily extended to include implicit integration methods. We define an
+%implicit Adams (Adams-Moulton \cite{moulton1926new}) method in the same manner as above, starting
+%with the same simplified IVP \eref{eq:ivp} and expressing the scheme as
+%\begin{align}
+%y(t_{i+1}) = y(t_{i}) +& \beta_{1}F(t_{i-n+1},y_{i-n+1}) + \beta_{2}F(t_{i-n},y_{i-n}) \notag \\
+%+& \cdots + \beta_{n}F(t_{i+1},y_{i+1}). \label{eq:am_general}
+%\end{align}
+%Note the implicit nature of this time advancement scheme ($F(t_{i+1}, y_{i+1})$ is
+%directly involved in the calculation of $y_{i+1}$). As for the coefficients
+%$\boldsymbol{\beta}$, they are constructed in a manner similar to that of
+%the Adams-Bashforth coefficients $\boldsymbol{\alpha}$, employing a Vandermonde matrix to
+%create and solve a linear system
+%\begin{align}
+%V^{T} \cdot \boldsymbol{\beta} = \int_0^{\Delta t} \tau^{i} d\tau = \frac{(\Delta t)^{i}}{i+1}, \quad i = 1,2...,n, \quad V = \begin{bmatrix}
+%    1 & t_{1} &  \hdots   & t_{1}^{n-1}  \\
+%    1 & t_{2} & \hdots &  t_{2}^{n-1} \\
+%      \vdots  & \vdots  &  \ddots   &  \vdots   \\
+%       1 &   t_{n}  &  \hdots  & t_{n}^{n-1} \\
+%        \end{bmatrix}, \label{eq:vandermonde_implicit}
+%\end{align}
+%with the Vandermonde matrix now incorporating nodes shifted $\Delta t$ forwards
+%in time relative to its Adams-Bashforth counterpart.
+%%%%% END CANDIDATE FOR REMOVAL
 The concepts in the above sections, both single- and multi-rate, are
 easily extended to include implicit integration methods. We define an
 implicit Adams (Adams-Moulton \cite{moulton1926new}) method in the same manner as above, starting
@@ -384,21 +421,9 @@ with the same simplified IVP \eref{eq:ivp} and expressing the scheme as
 y(t_{i+1}) = y(t_{i}) +& \beta_{1}F(t_{i-n+1},y_{i-n+1}) + \beta_{2}F(t_{i-n},y_{i-n}) \notag \\
 +& \cdots + \beta_{n}F(t_{i+1},y_{i+1}). \label{eq:am_general}
 \end{align}
-Note the implicit nature of this time advancement scheme ($F(t_{i+1}, y_{i+1})$ is
-directly involved in the calculation of $y_{i+1}$). As for the coefficients
-$\boldsymbol{\beta}$, they are constructed in a manner similar to that of
-the Adams-Bashforth coefficients $\boldsymbol{\alpha}$, employing a Vandermonde matrix to
-create and solve a linear system
-\begin{align}
-V^{T} \cdot \boldsymbol{\beta} = \int_0^{\Delta t} \tau^{i} d\tau = \frac{(\Delta t)^{i}}{i+1}, \quad i = 1,2...,n, \quad V = \begin{bmatrix}
-    1 & t_{1} &  \hdots   & t_{1}^{n-1}  \\
-    1 & t_{2} & \hdots &  t_{2}^{n-1} \\
-      \vdots  & \vdots  &  \ddots   &  \vdots   \\
-       1 &   t_{n}  &  \hdots  & t_{n}^{n-1} \\
-        \end{bmatrix}, \label{eq:vandermonde_implicit}
-\end{align}
-with the Vandermonde matrix now incorporating nodes shifted $\Delta t$ forwards
-in time relative to its Adams-Bashforth counterpart.
+The coefficients $\boldsymbol{\beta}$ are constructed in a manner identical to
+the Adams-Bashforth coefficients $\boldsymbol{\alpha}$ (see Equation \ref{eq:vandermonde}),
+using temporal nodes shifted $\Delta t$ forward in time.
 
 Extension of this implicit method into the multi-rate framework is
 straightforward, given that the driving principle of the Adams-Moulton
@@ -465,7 +490,16 @@ differential approaches to solving the governing equations that time-march
 the rates-of-change of temperature and pressure (as opposed to
 differential-algebraic approaches that directly satisfy the ideal gas and
 constant internal energy constraints) are used.
-
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/autoignition_drift.png}
+	\caption{Temperature profiles (left) and log of relative ideal gas law residual (right)
+		 for advancement of homogeneous H2-O2 autoignition example (employing the nine-species
+		 San Diego mechanism) using a fully differential approach (blue) versus a differential-algebraic
+		 approach (orange) where the constant internal energy and ideal gas law constraints are fulfilled
+		 by a Newton solve within Cantera.}
+\label{fig:autoignition_drift}
+\end{figure}
 To avoid drift off of the ideal gas law manifold, a chemical
 kinetic Jacobian modified to include the algebraic constraints explicitly can
 be used. This approach, detailed in Hung \cite{hung2003algorithms}, modifies the molar source terms to incorporate
@@ -496,29 +530,35 @@ Petzold \cite{ascher1998computer}.
 
 \subsubsection{Timestep Control Algorithm}
 
+%%%%% CANDIDATE FOR REMOVAL
+%Early implicit-explicit runs of small-scale reacting flow problems
+%quickly identified a need to adapt the timestep of the integrator based
+%on relative and/or absolute local error demands. We therefore employ a
+%timestep control algorithm which, in its current form, is that of ODE45 \cite{dormand1980family}, wherein
+%a timestep multiplier $r$ is calculated based on a local error estimate constructed from
+%state estimates of two (differing) explicit orders:
+%\begin{align}
+%r = \frac{\|s_{q+1} - s_{q}\|_{2}}{\text{ATOL} + \text{RTOL} \cdot \text{max}(\|s_{q}\|_{2}, \|s_{q+1}\|_{2})}
+%\end{align}
+%Here, $s_{q}$ is the state estimate obtained using an order-$q$ scheme, and ATOL and RTOL are absolute and
+%relative error tolerances specified by the user. Once $r$ is calculated, the timestep is \emph{decreased} if
+%$r>=1$ via
+%\begin{align}
+%\Delta t = 0.9\Delta t (r)^{-1/q}
+%\end{align}
+%and \emph{increased} if $r<1$ via
+%\begin{align}
+%\Delta t = 0.9\Delta t (r)^{-1/(q+1)}
+%\end{align}
+
+%Another form under consideration is that of CVODE, which makes use of a weighted
+%root-mean-square norm to more adequately handle states with components that
+%feature a large variation in magnitude. The weights are calculated as
+%%%%% END CANDIDATE FOR REMOVAL
 Early implicit-explicit runs of small-scale reacting flow problems
 quickly identified a need to adapt the timestep of the integrator based
 on relative and/or absolute local error demands. We therefore employ a
-timestep control algorithm which, in its current form, is that of ODE45 \cite{dormand1980family}, wherein
-a timestep multiplier $r$ is calculated based on a local error estimate constructed from
-state estimates of two (differing) explicit orders:
-%%%%% CANDIDATE FOR REMOVAL
-\begin{align}
-r = \frac{\|s_{q+1} - s_{q}\|_{2}}{\text{ATOL} + \text{RTOL} \cdot \text{max}(\|s_{q}\|_{2}, \|s_{q+1}\|_{2})}
-\end{align}
-Here, $s_{q}$ is the state estimate obtained using an order-$q$ scheme, and ATOL and RTOL are absolute and
-relative error tolerances specified by the user. Once $r$ is calculated, the timestep is \emph{decreased} if
-$r>=1$ via
-\begin{align}
-\Delta t = 0.9\Delta t (r)^{-1/q}
-\end{align}
-and \emph{increased} if $r<1$ via
-\begin{align}
-\Delta t = 0.9\Delta t (r)^{-1/(q+1)}
-\end{align}
-%%%%% END CANDIDATE FOR REMOVAL
-
-Another form under consideration is that of CVODE, which makes use of a weighted
+timestep control algorithm which, in its current form, is that of CVODE, which makes use of a weighted
 root-mean-square norm to more adequately handle states with components that
 feature a large variation in magnitude. The weights are calculated as
 \begin{align}
@@ -526,9 +566,10 @@ w_{i} = \frac{1}{\text{ATOL} + \text{RTOL} \lvert s_{q,i} \rvert}
 \end{align}
 with the weighted root-mean-square norm then being given by
 \begin{align}
-\|E\|_{wrms} = \left(\sum_{i=1}^{N} \frac{1}{N} (w_{i}(s_{q+1,i} - s_{q,i}))^2 \right)^{1/2}.
+\|E\|_{wrms} = \left(\sum_{i=1}^{N} \frac{1}{N} (w_{i}(s_{q+1,i} - s_{q,i}))^2 \right)^{1/2},
 \end{align}
-Based on whether $\|E\|_{wrms}$ is less than or greater than 1, the timestep
+where $s_{q}$ is the state estimate obtained using an order-$q$ scheme. Based on whether
+$\|E\|_{wrms}$ is less than or greater than 1, the timestep
 is modified in the same manner as above.
 
 Regardless of the error norm used, this added capability alone presents a number of
