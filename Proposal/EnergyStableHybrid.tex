@@ -9,8 +9,8 @@ due to poor spatial resolution. While finite-difference approaches to spatial
 discretization are popular due to their simplicity and efficiency when working
 with smooth solutions, their geometric flexibility is typically limited in spite
 of the well-documented ability to use coordinate transforms to create intricate
-curvilinear meshes, as well as the ability to use overset meshes to produce
-higher resolution in particularly troublesome sections of the spatial domain.
+curvilinear meshes, as well as the ability to use overset meshes (\cite{bodony2011provably}, \cite{noack2005summary})
+to produce higher resolution in particularly troublesome sections of the spatial domain.
 
 In particular, the SBP methodology pioneered by Strand \cite{strand1994summation},
 which mimics
@@ -25,7 +25,8 @@ the blocks conform at their corners (the latter of these characteristics was
 later removed by Nissen et. al in 2015 \cite{nissen2015stable}). The use of SBP-SAT finite
 difference techniques in conjunction with nonconforming grid interfaces has been further
 extended to use with the second-order wave equation \cite{wang2016high}, 3D elastic wave
-simulations \cite{gao2020energy}, the Schr{\"o}dinger equations \cite{nissen2012stability}, and the advection-diffusion equation \cite{lundquist2018hybrid}. 
+simulations \cite{gao2020energy}, the Schr{\"o}dinger equations \cite{nissen2012stability},
+and the advection-diffusion equation \cite{lundquist2018hybrid}. 
 
 Meanwhile, another attractive approach to modeling complex geometries more efficiently
 with a localized spatial discretization change is to create a hybrid spatial
@@ -36,8 +37,9 @@ proposed such a scheme in 2006 \cite{nordstrom2006stable}, coupling a high-order
 and a second-order finite volume scheme. More recently, in 2016, Kozdon and Wilcox
 \cite{kozdon2016stable} developed an interface method between SBP finite-difference
 blocks that was based on projection into an intermediate "glue" grid characterized by
-piecewise polynomials, with the method also extending to the coupling between SBP
-finite-difference methods and discontinuous Galerkin methods. In this work, the interface method was proven to be stable via the energy method, but the projection operators were
+piecewise polynomials, with the method also extending to the coupling of SBP
+finite-difference methods and discontinuous Galerkin methods. In this work, the
+interface method was proven to be stable via the energy method, but the projection operators were
 not fully determined and were based in part on an optimization procedure focused on
 driving the product of the projection matrices closer to an identity operation.
 Furthermore, the method was not extended to three dimensions, and the method is reduced
@@ -45,7 +47,7 @@ to first order accuracy if the continuous coordinate transforms on either side o
 interface are dissimilar.
 \begin{figure}
 \centering
-\includegraphics[width=0.7\linewidth,trim=4 4 4 4,clip]{figures/nonconforming_samples.png}
+\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/nonconforming_samples.png}
 \caption{Two examples demonstrating use of nonconforming interfaces. Left: Zhu, Chen, Zhong, and Liu \cite{zhu2011hybrid}.
 	 Right: Kozdon and Wilcox \cite{kozdon2016stable}}
 \label{fig:nonconforming_samples}
@@ -56,15 +58,17 @@ projection process degree-preserving (a characteristic that had been
 previously shown to be problematic by Lundquist and Nordstr{\"o}m \cite{lundquist2016suboptimal}) as well as
 energy-stable and conservative, but their approach still results in projection
 operators that are not fully determined, relying upon an optimization procedure
-to produce the operators that give their results. In 2019, Almquist et. al \cite{almquist2019order} developed new order-preserving interpolation operators that accomplished
+to produce the operators that give their results. In 2019, Almquist et. al
+\cite{almquist2019order} developed new order-preserving interpolation operators that accomplished
 the same goal as Friedrich et. al without increasing the quadrature order, and which
 extended to problems with second-order spatial derivatives, but their results again
 were confined to problems with a fixed 2:1 refinement ratio. Furthermore, unlike Kozdon
-and Wilcox, both the methods of Almquist and Friedrich fail to extend their method to hybrid structured-unstructured discretizations.
+and Wilcox, both the methods of Almquist and Friedrich fail to extend their method
+to hybrid structured-unstructured discretizations.
 
 %\subsubsection{Goals, Bounds, and Impact} \label{sec:hybrid_goals}
 
-This section of the proposal targets a lack of fully-determined high-order
+This section of the thesis targets a lack of fully-determined high-order
 accurate and provably stable interface conditions between structured and unstructured
 meshes for computational fluid dynamic simulations. The key contribution of this work
 will be construction of an interface between the structured (finite difference SBP)
@@ -80,13 +84,13 @@ maintaining accuracy and stability is a resulting projection process that is abl
 provide "round-trip" fidelity of projection, meaning that projection from the structured
 grid to the unstructured grid and back results in a solution identical to the starting
 point. This characteristic is one that the operators of \cite{kozdon2016stable} lack,
-even in projection from one grid into the intermediate glue layer (see Section \ref{sec:interface}).
+even in projection from one grid into the intermediate glue layer.
 
 The strategy for pursuance of these goals begins with consideration of the
 \emph{interior} projection operator only, given the simplicity of the existing
 interior stencil relative to the boundary (which features many more unknowns).
-Noting also that the compatibility condition (discussed in Section \ref{sec:interface} to be the
-critical condition for proving a stable interface) disallows us from obtaining
+Noting also that the compatibility condition, which we will later find to be the
+critical condition for proving a stable interface, disallows us from obtaining
 exact "round-trip" projection, other conditions may be considered based
 on further manipulation or restructuring of the edge energy dissipation relations,
 which will be derived for both structured and unstructured spatial discretizations
@@ -120,7 +124,7 @@ will subsequently be considered.
 %===========================================================================
 \subsection{Governing Equations}
 
-The initial problem to which our new hybrid method will be targeted is
+The initial problem to which our new interface method will be targeted is
 the acoustic wave equation in two dimensions, in first-order form:
 \begin{align}
 	&\rho \frac{\partial v_{i}}{\partial t} + \frac{\partial p}{\partial x_{i}} = 0 \hspace{2mm} (i = 1, 2), \label{eq:wave1} \\
@@ -180,9 +184,10 @@ of various order, including the coefficients themselves, can be found
 in \cite{strand1994summation}, \cite{carpenter1993time}, \cite{mattsson2004stable}. For this work,
 we will employ diagonal-norm SBP operators for the finite difference discretizations.
 
-The SBP-SAT spatial discretization of the governing equations in the previous section (\eref{eq:wave1} - \eref{eq:wave2}),
-in two dimensions and including the effect of coordinate transform from the physical
-space to a reference space $[-1,1]\times[-1,1]$, is given by
+The SBP-SAT spatial discretization of the governing equations in the previous section
+(Equations \eref{eq:wave1} - \eref{eq:wave2}), in two dimensions and including the
+effect of coordinate transform from the physical space to a reference space
+$[-1,1]\times[-1,1]$, is given by
 \begin{align}
 	&\rho \pmb{J} \frac{d \pmb{v}_{i}}{dt}
 	+ \pmb{D}_{1} \pmb{J} \frac{ \pmb{\partial \xi_{1}}}{\pmb{\partial x_{i}}} \pmb{p}
@@ -361,7 +366,7 @@ variational equations, which can then be spatially discretized with the DG metho
 These equations provide a semi-discretization on each element.
 %%%%% replacement
 The normals $n_{i}$ and surface Jacobians $S_{J}$ are the same
-as the ones defined by equations \eref{eq:norms_jac}, and the starred
+as the ones defined by \eref{eq:norms_jac}, and the starred
 quantities again refer to boundary and interface conditions implemented via penalization,
 in this instance better referred to as numerical fluxes.
 %%%%% end replacement
@@ -412,12 +417,15 @@ the energy dissipation rate
   - {\left(\pmb{p}_{K}^{-}\right)}^{T}\pmb{\Omega}_{bc}\pmb{S}_{JK}
   \left(\pmb{v}^{*}_{K} - \pmb{v}^{-}_{K}\right). \label{eq:dg_diss}
 \end{align}
+As in the case of SBP, this relation is naturally critical in establishing the
+energy stability of the interface, especially considering its direct incorporation
+of starred (interface-driven) quantities.
 
 \subsubsection{Interface Method} \label{sec:interface}
 
 Clearly critical in the proof of energy stability for the marriage of the
 above methods is the definition of the terms $\pmb{p}^*$ and $\pmb{v}^*$, most
-often referred to as the numerical fluxes (in the context of DG) or penalty fluxes
+often referred to as the numerical fluxes (in the context of DG) or penalty terms
 (in the context of SBP). At the interface between the two discretizations, these
 quantities are naturally contingent on the nature of the interface method, which
 for the purposes of this discussion take a basic form based on projection operators
@@ -438,7 +446,7 @@ As detailed in their paper, the operators of Kozdon and Wilcox rely primarily
 upon the principle of projecting solutions from either discretization
 first into an intermediate "glue" space of piecewise continuous polynomials
 before projecting the solution onto the other nonconforming discretization. Whereas
-the solution on the respective structured and unstructured grids is respresented at
+the solution on the respective structured and unstructured grids is represented at
 the block boundaries on the grid points, the solution on the intermediate glue grid
 is represented on each interval by modal coefficient values multiplying Legendre
 polynomials defined on the interval $[-1,1]$.
@@ -461,7 +469,7 @@ the per-block semi-discrete expressions for energy dissipation \eref{eq:sbp_diss
 
 Also critical in the projection from one spatial discretization to another via this
 method is the projection between glue spaces (see Figure \ref{fig:glue_layers}). A
-compatibility condition similar to \ref{eq:compat} is assumed for this projection,
+compatibility condition similar to (\ref{eq:compat}) is assumed for this projection,
 \begin{align}
 	\pmb{M}_{a}\pmb{P}_{gb2ga} = \pmb{P}_{ga2gb}^{T}\pmb{M}_{b} \label{eq:compat_glues}
 \end{align}
@@ -470,7 +478,7 @@ $\pmb{P}_{f2g}$ can also be generalized as projection operators to and from the 
 glue layer.
 \begin{figure}
 \centering
-\includegraphics[width=0.7\linewidth,trim=4 4 4 4,clip]{figures/glue_layers.png}
+\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/glue_layers.png}
 \caption{Image from Kozdon and Wilcox \cite{kozdon2016stable} demonstrating the glue
          layers present in grid-to-grid projection at a nonconforming interface.}
 \label{fig:glue_layers}
@@ -483,7 +491,7 @@ defines interior and boundary accuracy conditions when projecting from grid to g
 same order. A pictorial representation of this process is given by Figure \ref{fig:projection_layout}.
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/projection_layout.png}
+\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/projection_layout.png}
 \caption{Images demonstrating the interior constraints for the projection mimicking SBP4-2
 	 operators. Left: projection of modal coefficients of the piecewise polynomial solution
 	 on the four surrounding glue grid intervals to the central grid point in the stencil must
@@ -546,7 +554,7 @@ of the SBP method, as well as the order of the projection across the interface,
 is specified to match the order of the discontinous Galerkin method.
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/split_domain_wave_double.png}
+\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/split_domain_wave_double.png}
 \caption{Pressure initial condition for test problem, also showing split-domain
 	 discretization. The right figure coarsens the wireframe to better show the
 	 individual triangular DG elements.}
@@ -580,13 +588,14 @@ is whether there are alternative conditions on the grid-to-glue projection that
 will provide similar characteristics.
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/advection_projection.png}
+\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/advection_projection.png}
 \caption{Application of the glue layer projection theory of \cite{kozdon2016stable} to a
 	 scalar advection example with an advection speed of 1. The purple line in the figure
-	 on the left is a glue layer to which we project the solution on the leftmost grid points
-	 at the periodic boundary in $x$. We then project from the glue layer to the rightmost set
+	 on the left is a glue layer to which we project the solution on the rightmost grid points
+	 at the periodic boundary in $x$. We then project from the glue layer to the leftmost set
 	 of grid points. The plots on the right show both an overall decrease in energy (energy stability)
-	 and a good agreement between the calculated and analytically estimated energies.}
+	 and a good agreement between the energy calculated from the time-integrated state and the energy
+	 calculated from time-integrating the energy dissipation rate.}
 \label{fig:advection_projection}
 \end{figure}
 In particular, one question that demands answer pertains directly to the

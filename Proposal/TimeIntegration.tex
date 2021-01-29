@@ -19,7 +19,7 @@ to introduce an operator-splitting technique (\cite{sportisse2000method},
 and diffusion terms in the right-hand-sides are advanced explicitly,
 with the chemical source term(s) being advanced implicitly and
 in a separate substep, typically by software packages such as CVODE \cite{cohen1996cvode}.
-However, this approach results in a scheme that is at best
+However, this approach results in a scheme that is typically at best
 first- or second- order accurate in time globally.
 
 To more accurately handle such situations, implicit-explicit (IMEX) time
@@ -34,7 +34,7 @@ additive-RK schemes, applying them to the reactive Euler equations and
 demonstrating first order with a need for numerical diffusion as the problem
 becomes less stiff.
 
-Another approach to handling stiffness, and the resulting disparity in
+Another approach to handling stiffness, and in particular the resulting disparity in
 timescales between different simulation components, is the use of multi-rate
 time integration. Gear and Wells \cite{gear1984multirate} were the initial authors of
 work on multi-step multi-rate methods, with similar contributions provided more
@@ -42,7 +42,11 @@ recently by Constantinescu and Sandu \cite{constantinescu2007multirate} for hype
 conservation laws. Constantinescu and Sandu later extended this work to develop implicit
 multi-rate schemes \cite{constantinescu2010extrapolated},
 \cite{constantinescu2013extrapolated}, but failed to introduce a scheme featuring both
-implicitly and explicitly advanced components within a multi-rate framework.
+implicitly and explicitly advanced components within a multi-rate framework. Kl\"{o}ckner
+\cite{klockner2010high} also conducted an empirical investigation into the effects of the various design choices
+present in a two-component scheme based on the work of Gear and Wells, with Mikida et. al
+\cite{mikida2019multi} applying this framework to fluid simulation on overset grids using provably stable
+interpolation to form the coupling between grid-determined timescales.
 
 %\subsubsection{Goals, Bounds, and Impact}
 
@@ -62,24 +66,26 @@ common in ignition simulations, where the high-stiffness qualities of the
 kinetics during ignition contrast with surrounding simulation time in which
 the mass fractions are at or near chemical equilibrium.
 
-Perhaps the next most prominent goal is a thorough investigation of
-the design space presented by the multi-rate framework we will use for time
-integration. The design choices inherent to this scheme are summarized in part
-in Section \ref{sec:multirate}, but also include:
-\begin{itemize}
-%\item{Which right-hand side components in the governing equations should be treated as
-%      fast-evolving components, and which should be treated as slow-evolving components}
-%\item{Evaluation order ("fastest-first" vs. "slowest-first")}
-%\item{Re-extrapolation}
-%\item{Inclusion of additional history beyond order requirements (shown in \cite{mikida2019multi}
-%      to provide real-axis stability improvement)}
-\item{Which solution components to include in error estimation for adaptive timestep
-      control}
-\item{Whether error control is accomplished through timestep control or step ratio control}
-\end{itemize}
-Another critical component would be comparison of our scheme with CVODE as
+%%%%% CANDIDATE FOR REMOVAL
+%Perhaps the next most prominent goal is a thorough investigation of
+%the design space presented by the multi-rate framework we will use for time
+%integration. The design choices inherent to this scheme are summarized in part
+%in Section \ref{sec:multirate}, but also include:
+%\begin{itemize}
+%%\item{Which right-hand side components in the governing equations should be treated as
+%%      fast-evolving components, and which should be treated as slow-evolving components}
+%%\item{Evaluation order ("fastest-first" vs. "slowest-first")}
+%%\item{Re-extrapolation}
+%%\item{Inclusion of additional history beyond order requirements (shown in \cite{mikida2019multi}
+%%      to provide real-axis stability improvement)}
+%\item{Which solution components to include in error estimation for adaptive timestep
+%      modification}
+%\item{Whether error control is accomplished through timestep modification or step ratio modification.}
+%\end{itemize}
+%%%%% END CANDIDATE FOR REMOVAL
+A critical component in our effort will be comparison of the resulting scheme with CVODE as
 a proxy for the state of the art in time integration of chemically reacting
-flows, ideally achieving superiority in terms of observed temporal accuracy
+flows, with the goal of achieving superiority in terms of observed temporal accuracy
 of the entire system, or in terms of performance (most accurately measurable
 by a reduction in the number of chemistry right-hand-side evaluations required
 to reach a given solution time).
@@ -93,7 +99,6 @@ potential adaptive implicit integration scenarios, namely:
       of all solution components makes use of implicit and explicit state
       estimates.}
 \end{itemize}
-
 With these goals and bounds in mind, the proposed thesis has the potential to
 have a significant impact on the simulation of reacting flows, of which there
 are countless real-world applications including (but not limited to) subsonic
@@ -123,7 +128,7 @@ The problem at hand involves the simulation of chemically reacting flows, the
 governing equations of which amount to the Navier-Stokes equations with (in
 our form):
 \begin{itemize}
-\item{A source term added to the energy equation in the form of heat flux}
+%\item{A source term added to the energy equation in the form of heat flux}
 \item{The addition of a governing equation for the rate of change of the
       mass fractions of each species in the chemical mechanism simulated}
 \item{The addition of governing equations specifying the rate of change of
@@ -133,6 +138,7 @@ our form):
 \end{itemize}
 These equations are given below, along with a brief explanation of the notation/nomenclature
 used.
+
 \begin{align}
 \frac{\partial \rho}{\partial t} + \frac{\partial}{\partial x_{j}}(\rho u_{j}) &= 0 \label{eq:consmass} \\
 \frac{\partial}{\partial t}(\rho u_{i}) + \frac{\partial}{\partial x_{j}}(\rho u_{i} u_{j} + P\delta_{ij} - \tau_{ij}) &= 0 \label{eq:consmom} \\
@@ -141,11 +147,26 @@ used.
 \frac{\partial T}{\partial t} + \frac{\sum_{k=1}^{N_{sp}}U_{k}(T)\frac{\partial \rho Y_{k}}{\partial t}\frac{1}{W_{k}}}{\sum_{k=1}^{N_{sp}}[C]_{k}C_{v,k}(T)} &= 0 \label{eq:temp} \\
 \frac{\partial P}{\partial t} - \frac{R}{V}(T\frac{\partial n}{\partial t} + \frac{\partial T}{\partial t}n) &= 0 \label{eq:pres}
 \end{align}
-In these equations, $\rho$ is the fluid density, $u_{i}$ is the velocity in the $i$-th direction, and $E$ is the total energy.
+In these equations, $\rho$ is the fluid density, $u_{i}$ is the velocity in the $i$-th direction, and $E$ is the total energy density,
+calculated as
+\begin{align}
+E = U + \frac{1}{2} \sum u_{i}^{2}
+\end{align}
+where $U$ is the total internal energy of the gas mixture.
 $\delta_{ij}$ is the Kronecker delta, $P$ is the pressure, $T$ is the temperature, $R$ is the universal gas constant, and $Y_{k}$ is the mass fraction of
-species $k$. $[C]_{k}$ is the concentration of species $k$ in the gas mixture, $C_{v,k}(T)$ is the specific heat at constant volume
-of species $k$ at temperature $T$, and $U_{k}(T)$ is the internal energy of species $k$ at temperature $T$. These quantities
-are defined using the NASA 9-coefficient polynomial parameterization \cite{mcbride2002nasa}.
+species $k$. $[C]_{k}$ is the concentration of species $k$ in the gas mixture, $N_{sp}$ is the number of species
+in the chemical mechanism, $W_{k}$ is the molecular weight of species $k$, $n$ is the number of moles of the gas
+mixture, $V$ is the volume of the gas, and $\dot{\omega}_{k}$ is the net production rate of species $k$. $\tau_{ij}$
+is the viscous stress tensor, $\varphi_{ki}$ are the diffusion fluxes, and $q_{j}$ are the heat fluxes, defined by
+\begin{align}
+q_{j} = - \frac{\partial (\lambda T)}{\partial x_{j}} + h_{k}\varphi_{kj}.
+\end{align}
+In this expression, $\lambda$ is the thermal conductivity, and $h_{k}$ is the enthalpy of species $k$.
+As for the diffusion fluxes, these are defined using a mixture-averaged approach with a
+correction term to ensure mass conservation (\cite{smooke2013computation}, \cite{poinsot2005theoretical}, \cite{kee2005chemically}).
+$C_{v,k}(T)$ is the specific heat at constant volume of species $k$ at temperature $T$, and $U_{k}(T)$ is
+the internal energy of species $k$ at temperature $T$. These quantities are defined using the NASA 9-coefficient
+polynomial parameterization \cite{mcbride2002nasa}.
 %%%%% CANDIDATE FOR REMOVAL
 %are defined using the NASA 9-coefficient polynomial parameterization \cite{mcbride2002nasa}, such that
 %\begin{align}
@@ -155,16 +176,6 @@ are defined using the NASA 9-coefficient polynomial parameterization \cite{mcbri
 %where the $a$ coefficients are defined per-species for an arbitrary number of temperature regions.
 %%%%% END CANDIDATE FOR REMOVAL
 
-Returning to the Navier-Stokes equations \eref{eq:consmass} - \eref{eq:pres}, $N_{sp}$ is the number of species
-in the chemical mechanism, $W_{k}$ is the molecular weight of species $k$, $n$ is the number of moles of the gas
-mixture, V is the volume of the gas, and $\dot{\omega}_{k}$ is the net production rate of species $k$. $\tau_{ij}$
-is the viscous stress tensor, $\varphi_{ki}$ are the diffusion fluxes, and $q_{j}$ are the heat fluxes, defined by
-\begin{align}
-q_{j} = - \frac{\partial (\lambda T)}{\partial x_{j}} + h_{k}\varphi_{kj}.
-\end{align}
-In this expression, $\lambda$ is the thermal conductivity, and $h_{k}$ is the enthalpy of species $k$.
-As for the diffusion fluxes, these are defined using a mixture-averaged approach with a
-correction term to ensure mass conservation (\cite{smooke2013computation}, \cite{poinsot2005theoretical}, \cite{kee2005chemically}).
 %%%%% CANDIDATE FOR REMOVAL
 %As for the diffusion fluxes, these are defined using a mixture-averaged approach - that is, $\varphi_{ki}$
 %is given by
@@ -269,9 +280,10 @@ With this in mind, we can set a slow (larger) time step $H$ for $a_{s}$ such
 that we maintain stability in the integration of the slow component.  We also
 set a fast time step $h$ for $a_{f}$ such that $H$ is an integer multiple of
 $h$, and define the ratio between the two, $\text{SR} = H/h$, as the step ratio
-of the multi-rate scheme. While the results presented here make use of only two 
-separate state components, each with its own right-hand side function and
-independent rate, the theory is readily extensible to any number of rates.
+of the multi-rate scheme. While the reactive flow scheme presented here makes
+use of only two separate state components, each with its own right-hand side
+function and independent rate, the theory is readily extensible to any number
+of rates.
 
 Within this two-component scheme, a few design choices are available:
 \begin{itemize}
@@ -287,7 +299,9 @@ Within this two-component scheme, a few design choices are available:
 	side information is gathered at the micro-timestep level.
 \end{itemize}
 Empirical observations on the effects of these choices are made
-in \cite{klockner2010high}. The code implementing this method, as well as other methods
+in \cite{klockner2010high}, with a step-by-step walkthrough of the evaluations
+present in a single macrostep of a fastest-first scheme given by \cite{mikida2019multi}.
+The code implementing this method, as well as other methods
 within the multi-rate Adams framework, is generated by the Python packages 
 Leap \cite{Leap2020} and Dagrt \cite{Dagrt2020}, and all time integration scheme
 development is occurring via implementation in Leap.
@@ -366,22 +380,26 @@ self-influencing terms ($a_{ff}$ and $a_{ss}$):
 \begin{align}
 \frac{\textrm{d}}{\textrm{d}t}\left( \begin{array}{c} f(t) \\ s(t) \end{array} \right) = \left( \begin{array}{c} a_{ff}(f,s) + a_{fs}(f,s) \\ a_{sf}(f,s) + a_{ss}(f,s) \end{array} \right). \label{eq:mr_reacting}
 \end{align}
-In the reacting flow formulation with which we are concerned \eref{eq:consmass} - \eref{eq:pres}, we define
+In the reacting flow formulation with which we are concerned (Equations \eref{eq:consmass} - \eref{eq:pres}), we define
 the "fast" component of our Navier-Stokes solution as a vector of the
 mass fractions of the species as well as the temperature and pressure, $[\rho Y_{k}, T, P]^T$.
 The "slow" component is then defined as the set of typical conserved variables in a
 non-reacting simulation, $[\rho, (\rho \vec{u}), (\rho E)]^T$. As
 a result, one possible definition of the additive terms \eref{eq:mr_reacting} can be given as follows:
-\begin{align}
-a_{ff}(f,s) &= W_{k}\dot{\omega}_{k} \\
-a_{fs}(f,s) &= -\frac{\partial}{\partial x_{j}}(\rho Y_{k} u_{j} - \varphi_{ki}) \\
+\begin{align*}
+a_{ff}(f,s) &= \left(\begin{array}{c} W_{k}\dot{\omega}_{k} \\[0.3cm]
+	       - \frac{\sum_{k=1}^{N_{sp}}U_{k}(T)\frac{\partial \rho Y_{k}}{\partial t}\frac{1}{W_{k}}}{\sum_{k=1}^{N_{sp}}[C]_{k}C_{v,k}(T)} \\[0.5cm]
+	       \frac{R}{V}(T\frac{\partial n}{\partial t} + \frac{\partial T}{\partial t}n) \end{array} \right) \\
+a_{fs}(f,s) &= \left(\begin{array}{c} -\frac{\partial}{\partial x_{j}}(\rho Y_{k} u_{j} - \varphi_{ki}) \\
+	                              0 \\
+                                      0 \end{array} \right) \\
 a_{sf}(f,s) &= \left(\begin{array}{c} 0 \\
                                       -\frac{\partial}{\partial x_{j}}(P\delta_{ij}) \\
                                       -\frac{\partial}{\partial x_{j}}(Pu_{j}) \end{array} \right) \\
 a_{ss}(f,s) &= \left(\begin{array}{c} -\frac{\partial}{\partial x_{j}}(\rho u_{j}) \\
                                       -\frac{\partial}{\partial x_{j}}(\rho u_{i} u_{j} - \tau_{ij}) \\
                                       -\frac{\partial}{\partial x_{j}}((\rho E)u_{j} + q_{j} - u_{i}\tau_{ij}) \end{array} \right)
-\end{align}
+\end{align*}
 As our treatment of this set of equations with multi-rate integration develops,
 so too will our approach to defining the additive terms of \eref{eq:mr_reacting},
 as well as which state variables are deserving of fast or slow treatment.
@@ -436,7 +454,7 @@ In the case that implicit time integration is used, it will be used
 to drive $a_{ff}(f,s)$. In order to perform the implicit solve required
 to advance this right-hand side via Adams-Moulton, a Jacobian matrix
 is required. While other implementations such as CVODE's adaptive BDF
-algorithm for stiff problems make use of finite-difference generated
+algorithm for stiff problems often make use of finite-difference generated
 Jacobians, we will instead use PyJac-V2 \cite{curtis2018using} to obtain the analytical Jacobian
 for a given chemical mechanism via code generation, which will then
 be used by a simple Newton algorithm to perform the implicit solve. More
@@ -453,6 +471,7 @@ to the kinetics and reactive source term:
 \begin{align}
 f = \left(\frac{dT}{dt}, \frac{dP}{dt}, \frac{dn_{1}}{dt}, \frac{dn_{2}}{dt}, \hdots \frac{dn_{N_{sp}-1}}{dt} \right).
 \end{align}
+Here, $n_{i}$ is the number of moles of species $i$ in the mixture.
 While the temperature and pressure right-hand sides are given by \eref{eq:temp} and \eref{eq:pres},
 note that the molar source terms pertain only to the net production rates of the species:
 \begin{align}
@@ -484,8 +503,8 @@ Jacobian, which will directly improve performance.
 
 A critical consideration in the formulation of both the governing equations
 and the chemical Jacobian will be maintaining a solution
-that lies on the ideal gas constraint manifold (i.e. a physical solution) - this
-has been identified in early work as a potential sticking point when fully
+that lies on the ideal gas constraint manifold. This
+has been identified in early work as a potential concern when fully
 differential approaches to solving the governing equations that time-march
 the rates-of-change of temperature and pressure (as opposed to
 differential-algebraic approaches that directly satisfy the ideal gas and
@@ -518,12 +537,13 @@ where
 \frac{d\dot{n}_{i}^{*}}{dn_{j}} = \frac{d\dot{n}_{i}}{dn_{j}} - \frac{U_{j}}{C_{v}}\frac{d\dot{n}_{i}}{dT}.
 \end{align}
 In this expression, $U_{j}$ is the contribution of the $j$th species to the
-internal energy.
+internal energy, and $C_{v}$ is the specific heat of the mixture at constant
+volume.
 
 Which of these Jacobians is ideal for our purposes is a consideration worth
 monitoring as our implicit integration techniques develop. In particular, 
 a third relatively unexplored approach would use the fully differential
-method with pressure and temperature source terms, while also using attenuation
+method with pressure and temperature source terms, while also using penalization
 to force the solution towards the constraint manifold. This attenuation approach
 is described in some detail (albeit for smaller model problems) by Ascher and
 Petzold \cite{ascher1998computer}.
@@ -558,9 +578,9 @@ Petzold \cite{ascher1998computer}.
 Early implicit-explicit runs of small-scale reacting flow problems
 quickly identified a need to adapt the timestep of the integrator based
 on relative and/or absolute local error demands. We therefore employ a
-timestep control algorithm which, in its current form, is that of CVODE, which makes use of a weighted
-root-mean-square norm to more adequately handle states with components that
-feature a large variation in magnitude. The weights are calculated as
+timestep control algorithm which, in its current form, is similar to that of CVODE,
+using a weighted root-mean-square norm to more adequately handle states with
+components that feature a large variation in magnitude. The weights are calculated as
 \begin{align}
 w_{i} = \frac{1}{\text{ATOL} + \text{RTOL} \lvert s_{q,i} \rvert}
 \end{align}
@@ -590,14 +610,15 @@ effect on numerical performance.
 %===========================================================================
 \subsection{Validation Plan}
 
-The efficacy of the novel time integrators construced via the above methodology will
+The efficacy of the time integrators constructed via the above methodology will
 be assessed using a reacting mixing layer problem with a hyperbolic tangent velocity profile
 for the baseflow (as used by \cite{michalke1964inviscid} and \cite{blumen1970shear}), with
 the San Diego 9-species chemical mechanism \cite{sandiego} employed for the chemical kinetics. By perturbing
 this baseflow with the mode having the highest growth rate to instability (reproduced based
-on the inviscid analyses of \cite{michalke1964inviscid} and \cite{blumen1970shear}), we can
-establish a fast-evolving solution component (the chemical kinetics/mass fractions of the
-species) and a slow-evolving solution component (the fluid), both possessing accessible
+on the inviscid analyses of \cite{michalke1964inviscid} and \cite{blumen1970shear}), and by
+varying the temperature in the domain to induce ignition local to the mixing layer, we can
+establish a fast-evolving solution component (the chemical kinetics of the ignition) and a
+slow-evolving solution component (the fluid motion), both possessing accessible
 means of rate modification (for the chemistry, we can accomplish this by scaling the
 pre-exponential factors in the Arrhenius reaction rates, and for the fluid, we can scale
 the magnitude of the initial crossflow velocity).
@@ -640,7 +661,7 @@ Figure \ref{fig:cantera_reactors}.
 While the governing equations for this problem are not the same as those generated
 by PyJac, our hope is that it will serve as a suitably small stiff test problem to be
 used as a stepping stone in verification of the error-informed timestep controller
-for explicit methods.
+for explicit methods, as well as further exploration of its efficacy.
 
 As for the reacting crossflow validation problem, an initial setup employing
 cold flow (no autoignition) with the perturbed baseflow applied to sea level air
