@@ -8,7 +8,7 @@ change of the mass fraction of each species in the chemical mechanism
 at hand based on momentum, mass diffusion, and reaction kinetics. What
 results is a set of equations that can feature both a wide range of
 timescales and a number of comparatively stiff terms that can have
-an adverse effect on maximum allowable timestep size and, as a result,
+an adverse effect on maximum allowable timestep size and, as a byproduct,
 simulation performance and fidelity. In particular, the timescales
 of the chemical reactions are often multiple orders of magnitude lower
 than those of the fluid motion in practice. One approach to effectively
@@ -52,7 +52,7 @@ interpolation to form the coupling between grid-determined timescales.
 
 The primary goal of this section of the thesis is demonstration of a novel
 time integration scheme driving a demonstrative reacting flow problem
-with improved efficacy identified by either superior accuracy and stability and/or
+with improved efficacy identified by superior accuracy and stability and/or
 faster performance relative to existing methods. The integration project
 being undertaken aims to augment the capabilities of the multi-rate integrators
 developed in \cite{mikida2019multi}, adding the ability to treat certain
@@ -61,7 +61,7 @@ or the step ratio of the scheme based on local truncation error estimates. These
 additions are explicitly designed to handle the stiffness introduced to the flow
 problems to which these integrators were originally applied via the introduction
 of chemical source terms, as well as to efficiently integrate reacting flow
-simulations in which the stiffness varies. This latter phenomenon is especially
+simulations in which the stiffness varies in time. This latter phenomenon is especially
 common in ignition simulations, where the high-stiffness qualities of the
 kinetics during ignition contrast with surrounding simulation time in which
 the mass fractions are at or near chemical equilibrium.
@@ -86,9 +86,9 @@ the mass fractions are at or near chemical equilibrium.
 A critical component in our effort will be comparison of the resulting scheme with CVODE as
 a proxy for the state of the art in time integration of chemically reacting
 flows, with the goal of achieving superiority in terms of observed temporal accuracy
-of the entire system, or in terms of performance (most accurately measurable
-by a reduction in the number of chemistry right-hand-side evaluations required
-to reach a given solution time).
+of the entire system (initially targeting improvement over the low-order operator splitting approach),
+or in terms of performance (most accurately measurable by a reduction in the number of chemistry
+right-hand-side evaluations required to reach a given solution time).
 
 Meanwhile, an aspect of the algorithms being implemented that has been identified
 early as beyond our bounds is the presence of multi-variable solves in a number of
@@ -103,8 +103,8 @@ With these goals and bounds in mind, the proposed thesis has the potential to
 have a significant impact on the simulation of reacting flows, of which there
 are countless real-world applications including (but not limited to) subsonic
 and supersonic combustion for propulsion (gas turbines, ramjets/scramjets,
-rockets), furnaces and residential heating, and solution of problems relating
-to atmospheric sciences.
+rockets), energy efficiency of furnaces and residential heating, and
+solution of problems relating to atmospheric and climate sciences.
 
 %The proposed work would also serve to augment the capabilities of Leap and Dagrt,
 %two Python packages for code generation of time integrators, by implementing the
@@ -138,7 +138,6 @@ our form):
 \end{itemize}
 These equations are given below, along with a brief explanation of the notation/nomenclature
 used.
-
 \begin{align}
 \frac{\partial \rho}{\partial t} + \frac{\partial}{\partial x_{j}}(\rho u_{j}) &= 0 \label{eq:consmass} \\
 \frac{\partial}{\partial t}(\rho u_{i}) + \frac{\partial}{\partial x_{j}}(\rho u_{i} u_{j} + P\delta_{ij} - \tau_{ij}) &= 0 \label{eq:consmom} \\
@@ -446,7 +445,7 @@ using temporal nodes shifted $\Delta t$ forward in time.
 Extension of this implicit method into the multi-rate framework is
 straightforward, given that the driving principle of the Adams-Moulton
 method (namely, maintenance of right-hand side history values through
-which to interpolate) is the same as that of Adams-Bashforth, and amounts to
+which to extrapolate) is the same as that of Adams-Bashforth, and amounts to
 allowing the histories of each right-hand side term to maintain their
 own timestep intervals.
 
@@ -483,7 +482,7 @@ mechanism rather than the mass fractions:
 \begin{align}
 \Phi = \left(T, P, n_{1}, n_{2}, \hdots n_{N_{sp}-1}\right).
 \end{align}
-The number of moles in of the last species in the mixture is calculated
+The number of moles of the last species in the mixture is calculated
 via the mass fractions summing to 1.
 
 With these definitions in mind, we can expand \eref{eq:jac} and express
@@ -524,8 +523,8 @@ kinetic Jacobian modified to include the algebraic constraints explicitly can
 be used. This approach, detailed in Hung \cite{hung2003algorithms}, modifies the molar source terms to incorporate
 this constraint while removing the temperature and pressure source terms (which
 we then replace with a temperature Newton solve based on the constant internal
-energy constraint via Cantera \cite{cantera}), as well as a direct application of the ideal
-gas law to obtain the pressure. This modified Jacobian can be expressed as
+energy constraint via Cantera \cite{cantera}, as well as a direct application of the ideal
+gas law to obtain the pressure). This modified Jacobian can be expressed as
 \begin{align}
 J^{*} = \begin{bmatrix}	\frac{d\dot{n}_{1}^{*}}{dn_{1}} & \hdots & \frac{d\dot{n}_{1}^{*}}{dn_{N_{sp}-1}} \\
 	                \vdots & \ddots & \vdots \\
@@ -599,7 +598,7 @@ and \emph{increased} if $\|E\|_{wrms}<1$ via
 \end{align}
 
 %Regardless of the error norm used, this added capability alone presents a number of
-As mentioned in Section \ref{sec:timeint_bg}, this added capability presents a number of
+This added capability presents a number of
 questions in terms of how best to accomplish this error control. In particular,
 step ratio adjustment \emph{in situ}, rather than timestep adjustment, to meet error
 needs provides an implementation challenge in terms of code generation of these
@@ -659,7 +658,7 @@ Figure \ref{fig:cantera_reactors}.
 \label{fig:cantera_reactors}
 \end{figure}
 While the governing equations for this problem are not the same as those generated
-by PyJac, our hope is that it will serve as a suitably small stiff test problem to be
+by PyJac-V2, our hope is that it will serve as a suitably small stiff test problem to be
 used as a stepping stone in verification of the error-informed timestep controller
 for explicit methods, as well as further exploration of its efficacy.
 
@@ -670,8 +669,8 @@ growth rate of the unstable mode ongoing. Also implemented in the reacting flow
 solver is a one-dimensional laminar free flame problem, which may also be used
 as a first-pass validation (via comparison to the Cantera-estimated steady-state
 flame speed) for new integration methods for reacting flows as they become available.
-A basic description of this case, as well as flame speed data generated via a Leap
-IMEX integrator using PyJac analytical Jacobians, is given in the next section.
+A basic description of this case, as well as flame speed data generated via a Leap-generated
+IMEX ARK integrator using PyJac-V2 analytical Jacobians, is given in the next section.
 
 \subsubsection{Risk Mitigation}
 
@@ -683,8 +682,9 @@ approach via Leap implementation of an existing IMEX Runge-Kutta based scheme
 (\cite{kennedy2003additive}) that treats the chemistry implicitly via code-generated
 analytical Jacobians. Given the use of a coupled implicit-explicit scheme
 (for which high order has already been proven in other circumstances),
-as well as a chemical Jacobian that is more accurately obtained than via finite
-differences (the method of CVODE), this outcome should be attainable at minimum.
+as well as a chemical Jacobian that is more accurately and efficiently obtained
+than via finite differences (the method of CVODE), this outcome should be attainable
+at minimum.
 
 As a step towards proving this, we have implemented a small-scale one-dimensional
 free-flame test, wherein we use a code-generated implementation of the fourth-order
@@ -712,7 +712,7 @@ $\phi$ & Leap $S_{L}$ (m/s) & Cantera $S_{L}$ (m/s) & \% Error \\ \hline
 1.0 & 2.351950 & 2.421837 & 2.89 \\
 1.5 & 3.1734067 & 3.153888 & 0.62 \\ \hline
 \end{tabular}
-\captionof{table}{Comparing the laminar flame speeds estimated by Leap-PyJac
+\captionof{table}{Comparing the laminar flame speeds estimated by Leap-PyJac-V2
 	          chemistry integration and by Cantera's steady-state analysis.}
 }
 

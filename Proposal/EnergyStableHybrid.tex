@@ -47,7 +47,7 @@ to first order accuracy if the continuous coordinate transforms on either side o
 interface are dissimilar.
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/nonconforming_samples.png}
+\includegraphics[width=0.7\linewidth,trim=4 4 4 4,clip]{figures/nonconforming_samples.png}
 \caption{Two examples demonstrating use of nonconforming interfaces. Left: Zhu, Chen, Zhong, and Liu \cite{zhu2011hybrid}.
 	 Right: Kozdon and Wilcox \cite{kozdon2016stable}}
 \label{fig:nonconforming_samples}
@@ -63,7 +63,7 @@ to produce the operators that give their results. In 2019, Almquist et. al
 the same goal as Friedrich et. al without increasing the quadrature order, and which
 extended to problems with second-order spatial derivatives, but their results again
 were confined to problems with a fixed 2:1 refinement ratio. Furthermore, unlike Kozdon
-and Wilcox, both the methods of Almquist and Friedrich fail to extend their method
+and Wilcox, the methods of both Almquist and Friedrich fail to extend their method
 to hybrid structured-unstructured discretizations.
 
 %\subsubsection{Goals, Bounds, and Impact} \label{sec:hybrid_goals}
@@ -71,8 +71,8 @@ to hybrid structured-unstructured discretizations.
 This section of the thesis targets a lack of fully-determined high-order
 accurate and provably stable interface conditions between structured and unstructured
 meshes for computational fluid dynamic simulations. The key contribution of this work
-will be construction of an interface between the structured (finite difference SBP)
-and the unstructured (DG) spatial discretizations that does not rely upon
+will be construction of an interface between structured (finite difference SBP)
+and unstructured (DG) spatial discretizations that does not rely upon
 optimization or an unequal number of constraints and unknowns for construction
 of the solution projections. Currently, our plan is to match the approach of
 \cite{kozdon2016stable}, with the interface being defined by operators $\pmb{P}_{a2b}$
@@ -82,7 +82,7 @@ into discretization $b$, and vice versa.
 An additional goal to be pursued in conjunction with a unisolvent procedure while
 maintaining accuracy and stability is a resulting projection process that is able to
 provide "round-trip" fidelity of projection, meaning that projection from the structured
-grid to the unstructured grid and back results in a solution identical to the starting
+grid to the unstructured grid and back (and vice versa) results in a solution identical to the starting
 point. This characteristic is one that the operators of \cite{kozdon2016stable} lack,
 even in projection from one grid into the intermediate glue layer.
 
@@ -93,7 +93,7 @@ Noting also that the compatibility condition, which we will later find to be the
 critical condition for proving a stable interface, disallows us from obtaining
 exact "round-trip" projection, other conditions may be considered based
 on further manipulation or restructuring of the edge energy dissipation relations,
-which will be derived for both structured and unstructured spatial discretizations
+which will be given for both structured and unstructured spatial discretizations
 in subsequent sections. Should a procedure for fully-determined interior interface
 conditions be applied successfully to a periodic problem, the boundary interface
 will subsequently be considered.
@@ -188,6 +188,7 @@ The SBP-SAT spatial discretization of the governing equations in the previous se
 (Equations \eref{eq:wave1} - \eref{eq:wave2}), in two dimensions and including the
 effect of coordinate transform from the physical space to a reference space
 $[-1,1]\times[-1,1]$, is given by
+%\pagebreak
 \begin{align}
 	&\rho \pmb{J} \frac{d \pmb{v}_{i}}{dt}
 	+ \pmb{D}_{1} \pmb{J} \frac{ \pmb{\partial \xi_{1}}}{\pmb{\partial x_{i}}} \pmb{p}
@@ -270,7 +271,7 @@ values of these quantities at each grid point, as with $\pmb{J}$ (see \eref{eq:s
 The starred vectors $\pmb{p}^{*}$ and $\pmb{v}^{*}$ are specified by the boundary
 or interface condition.
 
-It can be shown (see \cite{kozdon2016stable}) that the energy dissipation rate
+It can be shown (see \cite{kozdon2016stable}, Appendix A) that the energy dissipation rate
 of an SBP block in this case is given by
 \begin{align}
   \frac{dE}{dt} = & \sum_{K = \{W,E,S,N\}} \mathcal{D}_{K},\\
@@ -423,10 +424,10 @@ of starred (interface-driven) quantities.
 
 \subsubsection{Interface Method} \label{sec:interface}
 
-Clearly critical in the proof of energy stability for the marriage of the
+Clearly vital in the proof of energy stability for the marriage of the
 above methods is the definition of the terms $\pmb{p}^*$ and $\pmb{v}^*$, most
 often referred to as the numerical fluxes (in the context of DG) or penalty terms
-(in the context of SBP). At the interface between the two discretizations, these
+(in the context of SBP-SAT). At the interface between the two discretizations, these
 quantities are naturally contingent on the nature of the interface method, which
 for the purposes of this discussion take a basic form based on projection operators
 that move the Grid $a$ solutions to Grid $b$,
@@ -485,7 +486,7 @@ glue layer.
 \end{figure}
 Given its clear importance, the compatibility condition (\ref{eq:compat}) is used as an explicit
 constraint when constructing the projection operators $\pmb{P}_{f2g}$ and $\pmb{P}_{g2f}$
-themselves. The construction, which is laid out in further detail in \cite{kozdon2016stable},
+themselves. The construction, which is laid out in further detail in \cite{kozdon2016stable} (Appendix B),
 defines interior and boundary accuracy conditions when projecting from grid to glue
 (and vice versa) that match those of corresponding SBP diagonal-norm operators of the
 same order. A pictorial representation of this process is given by Figure \ref{fig:projection_layout}.
@@ -563,8 +564,9 @@ is specified to match the order of the discontinous Galerkin method.
 Our success metrics for this test problem include:
 \begin{itemize}
 \item{Demonstrating accurate recreation of the total energy of the system, as observed in the
-      numerical simulation of the problem, via a total energy relation derived from the
-      spatial and interfacial schema.}
+      numerical simulation of the problem, via a comparison of the total energy calculated from the
+      time-integrated state and the total energy calculated via time-integration of a dissipation rate
+      derived from the spatial and interfacial schema.}
 \item{Demonstrating that this energy does not increase (condition for semi-discrete stability).}
 \item{Demonstrating the prescribed order of accuracy using L2 norms.}
 \end{itemize}
@@ -611,7 +613,9 @@ Additionally, and related to these questions, another avenue of investigation
 is in the choices of the degree-of-freedom pattern in the projection from
 grid to glue layer and vice versa, as well as whether or not there are other
 polynomial bases for the glue layer that maintain positive-definite mass
-matrices while also introducing improved accuracy.
+matrices while also introducing improved accuracy. Finally, the compatibility
+condition itself, and namely whether or not there are other conditions on the
+projection operators that may fulfill similar goals, may be called into question.
 
 \subsubsection{Risk Mitigation}
 
