@@ -2,7 +2,7 @@
 
 %\subsubsection{Historical Context}
 
-In the simulation of reacting flows, the compressible Navier-Stokes
+In the simulation of reacting flows, the compressible Navier--Stokes
 equations are augmented to include equations governing the rate of
 change of the mass fraction of each species in the chemical mechanism
 at hand based on momentum, mass diffusion, and reaction kinetics. What
@@ -13,9 +13,9 @@ simulation performance and fidelity. In particular, the timescales
 of the chemical reactions are often multiple orders of magnitude lower
 than those of the fluid motion in practice. One approach to effectively
 time-marching these problems at the fluid-relevant timescale, then, is
-to introduce an operator-splitting technique (\cite{sportisse2000method},
-\cite{strang1968construction}, \cite{lapointe2020data}, \cite{macart2016semi},
-\cite{ren2008second}, \cite{knio1999semi}) in which the advection
+to introduce an operator-splitting technique \cite{sportisse2000method,
+strang1968construction, lapointe2020data, macart2016semi,
+ren2008second, knio1999semi} in which the advection
 and diffusion terms in the right-hand-sides are advanced explicitly,
 with the chemical source term(s) being advanced implicitly and
 in a separate substep, typically by software packages such as CVODE \cite{cohen1996cvode}.
@@ -40,11 +40,11 @@ time integration. Gear and Wells \cite{gear1984multirate} were the initial autho
 work on multi-step multi-rate methods, with similar contributions provided more
 recently by Constantinescu and Sandu \cite{constantinescu2007multirate} for hyperbolic
 conservation laws. Constantinescu and Sandu later extended this work to develop implicit
-multi-rate schemes \cite{constantinescu2010extrapolated},
-\cite{constantinescu2013extrapolated}, but failed to introduce a scheme featuring both
+multi-rate schemes \cite{constantinescu2010extrapolated,
+constantinescu2013extrapolated}, but failed to introduce a scheme featuring both
 implicitly and explicitly advanced components within a multi-rate framework. Kl\"{o}ckner
 \cite{klockner2010high} also conducted an empirical investigation into the effects of the various design choices
-present in a two-component scheme based on the work of Gear and Wells, with Mikida et. al
+present in a two-component scheme based on the work of Gear and Wells, with Mikida et al.
 \cite{mikida2019multi} applying this framework to fluid simulation on overset grids using provably stable
 interpolation to form the coupling between grid-determined timescales.
 
@@ -125,8 +125,8 @@ solution of problems relating to atmospheric and climate sciences.
 \subsection{Governing Equations}
 
 The problem at hand involves the simulation of chemically reacting flows, the
-governing equations of which amount to the Navier-Stokes equations with (in
-our form):
+governing equations of which amount to the Navier--Stokes equations with (in
+our form)
 \begin{itemize}
 %\item{A source term added to the energy equation in the form of heat flux}
 \item{The addition of a governing equation for the rate of change of the
@@ -162,7 +162,7 @@ q_{j} = - \frac{\partial (\lambda T)}{\partial x_{j}} + h_{k}\varphi_{kj}.
 \end{align}
 In this expression, $\lambda$ is the thermal conductivity, and $h_{k}$ is the enthalpy of species $k$.
 As for the diffusion fluxes, these are defined using a mixture-averaged approach with a
-correction term to ensure mass conservation (\cite{smooke2013computation}, \cite{poinsot2005theoretical}, \cite{kee2005chemically}).
+correction term to ensure mass conservation \cite{smooke2013computation, poinsot2005theoretical, kee2005chemically}.
 $C_{v,k}(T)$ is the specific heat at constant volume of species $k$ at temperature $T$, and $U_{k}(T)$ is
 the internal energy of species $k$ at temperature $T$. These quantities are defined using the NASA 9-coefficient
 polynomial parameterization \cite{mcbride2002nasa}.
@@ -203,7 +203,7 @@ polynomial parameterization \cite{mcbride2002nasa}.
 %and the change in its physical properties. This presents a time integration problem in
 %that this term alone typically dictates either an oppressively low timestep or the need for
 %an implicit approach, often using tools such as CVODE. In practice, fluid solvers
-%also often decouple an explicit treatment of the Navier-Stokes equations \eref{eq:consmass} - \eref{eq:conse}
+%also often decouple an explicit treatment of the Navier--Stokes equations \eref{eq:consmass} - \eref{eq:conse}
 %from the implicit treatment of the chemical kinetics, resulting in a splitting
 %approach that is at best first or second order in time.
 
@@ -220,13 +220,13 @@ polynomial parameterization \cite{mcbride2002nasa}.
 \subsubsection{Adams Methods}
 
 For clarity, here we provide a brief derivation of a standard Adams-Bashforth (AB)
-integrator, as described in~\cite{bashforth1883attempt}, starting from a model IVP
+integrator, as described in~\cite{bashforth1883attempt}, starting from a model initial value problem (IVP)
 given by
 \begin{align}
 \frac{\text{d}y}{\text{d}t} = F(t,y), \quad y(0) = y_{0}. \label{eq:ivp}
 \end{align}
 Applying a method of lines (MOL) approach to spatially discretize and solve
-the reactive Navier-Stokes equations \eref{eq:consmass} - \eref{eq:pres} ultimately
+the reactive Navier--Stokes equations \eref{eq:consmass} - \eref{eq:pres} ultimately
 provides this form. We approximate the time dependency of the right-hand side function
 with a polynomial with coefficients $\boldsymbol{\alpha}$ (formed by interpolating past
 values of $F(t,y)$), extrapolate with that polynomial approximation, and integrate
@@ -243,7 +243,7 @@ V^{T} \cdot \boldsymbol{\alpha} = \int_0^{\Delta t} \tau^{i} d\tau = \frac{(\Del
 where $\int_0^{\Delta t} \tau^{i} d\tau$ is a vector evaluating the integral of
 the interpolation polynomial, and $V$ is the Vandermonde matrix with monomial
 basis and nodes $t_{1}, t_{2}, \hdots t_{n}$, corresponding to past time
-values. In \eref{eq:vandermonde}, $n$ is equal to the order of the integrator,
+values. In Eqn. \eref{eq:vandermonde}, $n$ is equal to the order of the integrator,
 and $t_{i}$ are the time history values, with $0 \leq t_{1} < t_{2} \hdots <
 t_{n}$.  The coefficients $\boldsymbol{\alpha}$ are used to extrapolate to the
 next state via
@@ -370,21 +370,21 @@ development is occurring via implementation in Leap.
 %%%%% END CANDIDATE FOR REMOVAL
 
 To fully realize the potential multi-rate formulation for reacting
-Navier-Stokes problems (for which the matrix of right-hand sides is
+Navier--Stokes problems (for which the matrix of right-hand sides is
 not as simple as in \cite{mikida2019multi}, where both right-hand sides
 and state components are realized as per-overset-grid quantities),
-we need to introduce additive terms to \eref{eq:mrab}, which we express
+we need to introduce additive terms to Eqn. \eref{eq:mrab}, which we express
 as terms coupling the fast and slow states ($a_{fs}$ and $a_{sf}$) and
 self-influencing terms ($a_{ff}$ and $a_{ss}$):
 \begin{align}
 \frac{\textrm{d}}{\textrm{d}t}\left( \begin{array}{c} f(t) \\ s(t) \end{array} \right) = \left( \begin{array}{c} a_{ff}(f,s) + a_{fs}(f,s) \\ a_{sf}(f,s) + a_{ss}(f,s) \end{array} \right). \label{eq:mr_reacting}
 \end{align}
-In the reacting flow formulation with which we are concerned (Equations \eref{eq:consmass} - \eref{eq:pres}), we define
-the "fast" component of our Navier-Stokes solution as a vector of the
+In the reacting flow formulation with which we are concerned (Eqn. \eref{eq:consmass} - \eref{eq:pres}), we define
+the "fast" component of our Navier--Stokes solution as a vector of the
 mass fractions of the species as well as the temperature and pressure, $[\rho Y_{k}, T, P]^T$.
 The "slow" component is then defined as the set of typical conserved variables in a
 non-reacting simulation, $[\rho, (\rho \vec{u}), (\rho E)]^T$. As
-a result, one possible definition of the additive terms \eref{eq:mr_reacting} can be given as follows:
+a result, one possible definition of the additive terms in Eqn. \eref{eq:mr_reacting} can be given as follows:
 \begin{align*}
 a_{ff}(f,s) &= \left(\begin{array}{c} W_{k}\dot{\omega}_{k} \\[0.3cm]
 	       - \frac{\sum_{k=1}^{N_{sp}}U_{k}(T)\frac{\partial \rho Y_{k}}{\partial t}\frac{1}{W_{k}}}{\sum_{k=1}^{N_{sp}}[C]_{k}C_{v,k}(T)} \\[0.5cm]
@@ -400,7 +400,7 @@ a_{ss}(f,s) &= \left(\begin{array}{c} -\frac{\partial}{\partial x_{j}}(\rho u_{j
                                       -\frac{\partial}{\partial x_{j}}((\rho E)u_{j} + q_{j} - u_{i}\tau_{ij}) \end{array} \right)
 \end{align*}
 As our treatment of this set of equations with multi-rate integration develops,
-so too will our approach to defining the additive terms of \eref{eq:mr_reacting},
+so too will our approach to defining the additive terms of Eqn. \eref{eq:mr_reacting},
 as well as which state variables are deserving of fast or slow treatment.
 
 \subsubsection{Implicit Adams Methods and Extension to Multi-rate}
@@ -430,17 +430,17 @@ as well as which state variables are deserving of fast or slow treatment.
 %with the Vandermonde matrix now incorporating nodes shifted $\Delta t$ forwards
 %in time relative to its Adams-Bashforth counterpart.
 %%%%% END CANDIDATE FOR REMOVAL
-The concepts in the above sections, both single- and multi-rate, are
+The concepts in the previous sections, both single- and multi-rate, are
 easily extended to include implicit integration methods. We define an
 implicit Adams (Adams-Moulton \cite{moulton1926new}) method in the same manner as above, starting
-with the same simplified IVP \eref{eq:ivp} and expressing the scheme as
+with the same simplified IVP of Eqn. \eref{eq:ivp} and expressing the scheme as
 \begin{align}
 y(t_{i+1}) = y(t_{i}) +& \beta_{1}F(t_{i-n+1},y_{i-n+1}) + \beta_{2}F(t_{i-n},y_{i-n}) \notag \\
 +& \cdots + \beta_{n}F(t_{i+1},y_{i+1}). \label{eq:am_general}
 \end{align}
 The coefficients $\boldsymbol{\beta}$ are constructed in a manner identical to
-the Adams-Bashforth coefficients $\boldsymbol{\alpha}$ (see Equation \ref{eq:vandermonde}),
-using temporal nodes shifted $\Delta t$ forward in time.
+the Adams-Bashforth coefficients $\boldsymbol{\alpha}$ (see Eqn. \ref{eq:vandermonde}),
+using temporal nodes shifted by $\Delta t$ forward in time.
 
 Extension of this implicit method into the multi-rate framework is
 straightforward, given that the driving principle of the Adams-Moulton
@@ -457,13 +457,13 @@ algorithm for stiff problems often make use of finite-difference generated
 Jacobians, we will instead use PyJac-V2 \cite{curtis2018using} to obtain the analytical Jacobian
 for a given chemical mechanism via code generation, which will then
 be used by a simple Newton algorithm to perform the implicit solve. More
-details on the construction of this Jacobian are given by Curtis et. al, but we
+details on the construction of this Jacobian are given by Curtis et al. \cite{curtis2018using}, but we
 document the basic form, in addition to an alternate differential-algebraic
 formulation, below.
 
 The chemical kinetics Jacobian can be written as the matrix
 \begin{align}
-J = \frac{\partial f_{i}}{\partial \Phi_{j}} \label{eq:jac}
+J = \frac{\partial f_{i}}{\partial \Phi_{j}}, \label{eq:jac}
 \end{align}
 where $f$ is the set of right-hand sides directly pertaining
 to the kinetics and reactive source term:
@@ -471,7 +471,7 @@ to the kinetics and reactive source term:
 f = \left(\frac{dT}{dt}, \frac{dP}{dt}, \frac{dn_{1}}{dt}, \frac{dn_{2}}{dt}, \hdots \frac{dn_{N_{sp}-1}}{dt} \right).
 \end{align}
 Here, $n_{i}$ is the number of moles of species $i$ in the mixture.
-While the temperature and pressure right-hand sides are given by \eref{eq:temp} and \eref{eq:pres},
+While the temperature and pressure right-hand sides are given by Eqn. \eref{eq:temp} and \eref{eq:pres},
 note that the molar source terms pertain only to the net production rates of the species:
 \begin{align}
 \frac{dn_{i}}{dt} = V \dot{\omega}_{i}.
@@ -485,14 +485,14 @@ mechanism rather than the mass fractions:
 The number of moles of the last species in the mixture is calculated
 via the mass fractions summing to 1.
 
-With these definitions in mind, we can expand \eref{eq:jac} and express
+With these definitions in mind, we can expand Eqn. \eref{eq:jac} and express
 it in true matrix form:
 \begin{align}
 J = \begin{bmatrix} \frac{d\dot{T}}{dT} & \frac{d\dot{T}}{dP} & \frac{d\dot{T}}{dn_{1}} & \hdots & \frac{d\dot{T}}{dn_{N_{sp}-1}} \\
                     \frac{d\dot{P}}{dT} & \frac{d\dot{P}}{dP} & \frac{d\dot{P}}{dn_{1}} & \hdots & \frac{d\dot{P}}{dn_{N_{sp}-1}} \\
 		    \frac{d\dot{n}_{1}}{dT} & \frac{d\dot{n}_{1}}{dP} & \frac{d\dot{n}_{1}}{dn_{1}} & \hdots & \frac{d\dot{n}_{1}}{dn_{N_{sp}-1}} \\
 		    \vdots & \vdots & \vdots & \ddots & \vdots \\
-		    \frac{d\dot{n}_{N_{sp}-1}}{dT} & \frac{d\dot{n}_{N_{sp}-1}}{dP} & \frac{d\dot{n}_{N_{sp}-1}}{dn_{1}} & \hdots & \frac{d\dot{n}_{N_{sp}-1}}{dn_{N_{sp}-1}} \\
+		    \frac{d\dot{n}_{N_{sp}-1}}{dT} & \frac{d\dot{n}_{N_{sp}-1}}{dP} & \frac{d\dot{n}_{N_{sp}-1}}{dn_{1}} & \hdots & \frac{d\dot{n}_{N_{sp}-1}}{dn_{N_{sp}-1}}. \\
     \end{bmatrix}
 \end{align}
 Providing this matrix to the implicit solver should serve to reduce the
@@ -507,15 +507,15 @@ has been identified in early work as a potential concern when fully
 differential approaches to solving the governing equations that time-march
 the rates-of-change of temperature and pressure (as opposed to
 differential-algebraic approaches that directly satisfy the ideal gas and
-constant internal energy constraints) are used.
+constant internal energy constraints) are used (see Figure \ref{fig:autoignition_drift}).
 \begin{figure}
 \centering
 \includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/autoignition_drift.png}
-	\caption{Temperature profiles (left) and log of relative ideal gas law residual (right)
+	\caption{Temperature profiles (left) and relative ideal gas law residual (right)
 		 for advancement of homogeneous H2-O2 autoignition example (employing the nine-species
-		 San Diego mechanism) using a fully differential approach (blue) versus a differential-algebraic
+		 San Diego mechanism \cite{sandiego}) using a fully differential approach (blue) versus a differential-algebraic
 		 approach (orange) where the constant internal energy and ideal gas law constraints are fulfilled
-		 by a Newton solve within Cantera.}
+		 by a Newton solve within Cantera \cite{cantera}.}
 \label{fig:autoignition_drift}
 \end{figure}
 To avoid drift off of the ideal gas law manifold, a chemical
@@ -528,14 +528,14 @@ gas law to obtain the pressure). This modified Jacobian can be expressed as
 \begin{align}
 J^{*} = \begin{bmatrix}	\frac{d\dot{n}_{1}^{*}}{dn_{1}} & \hdots & \frac{d\dot{n}_{1}^{*}}{dn_{N_{sp}-1}} \\
 	                \vdots & \ddots & \vdots \\
-	                \frac{d\dot{n}_{N_{sp}-1}^{*}}{dn_{1}} & \hdots & \frac{d\dot{n}_{N_{sp}-1}^{*}}{dn_{N_{sp}-1}} \\
+	                \frac{d\dot{n}_{N_{sp}-1}^{*}}{dn_{1}} & \hdots & \frac{d\dot{n}_{N_{sp}-1}^{*}}{dn_{N_{sp}-1}}, \\
     \end{bmatrix}
 \end{align}
 where
 \begin{align}
 \frac{d\dot{n}_{i}^{*}}{dn_{j}} = \frac{d\dot{n}_{i}}{dn_{j}} - \frac{U_{j}}{C_{v}}\frac{d\dot{n}_{i}}{dT}.
 \end{align}
-In this expression, $U_{j}$ is the contribution of the $j$th species to the
+In this expression, $U_{j}$ is the contribution of the $j$-th species to the
 internal energy, and $C_{v}$ is the specific heat of the mixture at constant
 volume.
 
@@ -588,13 +588,13 @@ with the weighted root-mean-square norm then being given by
 \|E\|_{wrms} = \left(\sum_{i=1}^{N} \frac{1}{N} (w_{i}(s_{q+1,i} - s_{q,i}))^2 \right)^{1/2},
 \end{align}
 where $s_{q,i}$ is the $i$-th component of the state estimate obtained using an order-$q$ scheme.
-The timestep is \emph{decreased} if $\|E\|_{wrms}$ is greater than 1 via
+The timestep is \emph{decreased} if $\|E\|_{wrms} \geq 1$ via
 \begin{align}
 \Delta t = 0.9\Delta t (\|E\|_{wrms})^{-1/q}
 \end{align}
 and \emph{increased} if $\|E\|_{wrms}<1$ via
 \begin{align}
-\Delta t = 0.9\Delta t (\|E\|_{wrms})^{-1/(q+1)}
+\Delta t = 0.9\Delta t (\|E\|_{wrms})^{-1/(q+1)}.
 \end{align}
 
 %Regardless of the error norm used, this added capability alone presents a number of
@@ -665,7 +665,7 @@ for explicit methods, as well as further exploration of its efficacy.
 As for the reacting crossflow validation problem, an initial setup employing
 cold flow (no autoignition) with the perturbed baseflow applied to sea level air
 is complete (see Figure \ref{fig:hyperbolic_cold_rhov2}), with validation via the
-growth rate of the unstable mode ongoing. Also implemented in the reacting flow
+growth rate of the unstable mode completed. Also implemented in the reacting flow
 solver is a one-dimensional laminar free flame problem, which may also be used
 as a first-pass validation (via comparison to the Cantera-estimated steady-state
 flame speed) for new integration methods for reacting flows as they become available.
@@ -675,11 +675,11 @@ IMEX ARK integrator using PyJac-V2 analytical Jacobians, is given in the next se
 \subsubsection{Risk Mitigation}
 
 Assuming demonstration of improved
-performance or accuracy of the \emph{multi-rate} integrators over the
+performance and/or accuracy of the \emph{multi-rate} integrators over the
 state-of-the-art is for reasons unforseen impossible, a "fallback" takeaway
 would be demonstration of improvement over a low-order splitting
 approach via Leap implementation of an existing IMEX Runge-Kutta based scheme
-(\cite{kennedy2003additive}) that treats the chemistry implicitly via code-generated
+\cite{kennedy2003additive} that treats the chemistry implicitly via code-generated
 analytical Jacobians. Given the use of a coupled implicit-explicit scheme
 (for which high order has already been proven in other circumstances),
 as well as a chemical Jacobian that is more accurately and efficiently obtained
@@ -690,7 +690,7 @@ As a step towards proving this, we have implemented a small-scale one-dimensiona
 free-flame test, wherein we use a code-generated implementation of the fourth-order
 additive Runge-Kutta scheme of Kennedy and Carpenter to drive a simulation of
 a premixed, freely propagating hydrogen flame with an unburned gas temperature
-of 300 K at a pressure of one atmosphere. Comparing the estimated laminar
+of 300 K at a pressure of one atmosphere (see Figure \ref{fig:freeflame_output}). Comparing the estimated laminar
 flame speed to that of a steady-state analysis performed by Cantera at a number
 of equivalence ratios $\phi$, we see suitable agreement of less than 3\% error, indicating
 that the reacting flow equations - and in particular the chemical source terms and Jacobians -

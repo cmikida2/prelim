@@ -1,25 +1,25 @@
 \markright {}
 \select@language {english}
-\contentsline {section}{\numberline {1}Time Integration of Reacting Flows}{3}{section.2}
-\contentsline {subsection}{\numberline {1.1}Motivation \& Background}{3}{subsection.3}
-\contentsline {subsection}{\numberline {1.2}Governing Equations}{4}{subsection.4}
-\contentsline {subsection}{\numberline {1.3}Numerical Methods}{5}{subsection.13}
-\contentsline {subsubsection}{\numberline {1.3.1}Adams Methods}{5}{subsubsection.14}
-\contentsline {subsubsection}{\numberline {1.3.2}Multi-rate Adams Methods}{6}{subsubsection.18}
-\contentsline {subsubsection}{\numberline {1.3.3}Implicit Adams Methods and Extension to Multi-rate}{7}{subsubsection.21}
-\contentsline {subsubsection}{\numberline {1.3.4}Timestep Control Algorithm}{10}{subsubsection.31}
-\contentsline {subsection}{\numberline {1.4}Validation Plan}{11}{subsection.36}
-\contentsline {subsection}{\numberline {1.5}Outlook}{11}{subsection.38}
-\contentsline {subsubsection}{\numberline {1.5.1}Current Status}{11}{subsubsection.39}
-\contentsline {subsubsection}{\numberline {1.5.2}Risk Mitigation}{12}{subsubsection.41}
-\contentsline {section}{\numberline {2}Energy-Stable Hybrid Spatial Discretizations}{13}{section.44}
-\contentsline {subsection}{\numberline {2.1}Motivation \& Background}{13}{subsection.45}
-\contentsline {subsection}{\numberline {2.2}Governing Equations}{15}{subsection.47}
-\contentsline {subsection}{\numberline {2.3}Numerical Methods}{16}{subsection.52}
-\contentsline {subsubsection}{\numberline {2.3.1}Summation-by-Parts Operators}{16}{subsubsection.53}
-\contentsline {subsubsection}{\numberline {2.3.2}Discontinuous Galerkin Method}{18}{subsubsection.66}
-\contentsline {subsubsection}{\numberline {2.3.3}Interface Method}{19}{subsubsection.74}
-\contentsline {subsection}{\numberline {2.4}Validation Plan}{20}{subsection.81}
-\contentsline {subsection}{\numberline {2.5}Outlook}{22}{subsection.88}
-\contentsline {subsubsection}{\numberline {2.5.1}Current Status}{22}{subsubsection.89}
-\contentsline {subsubsection}{\numberline {2.5.2}Risk Mitigation}{23}{subsubsection.91}
+\contentsline {section}{\numberline {1}Time Integration of Reacting Flows}{1}{section.2}
+\contentsline {subsection}{\numberline {1.1}Motivation \& Background}{1}{subsection.3}
+\contentsline {subsection}{\numberline {1.2}Governing Equations}{2}{subsection.4}
+\contentsline {subsection}{\numberline {1.3}Numerical Methods}{3}{subsection.13}
+\contentsline {subsubsection}{\numberline {1.3.1}Adams Methods}{3}{subsubsection.14}
+\contentsline {subsubsection}{\numberline {1.3.2}Multi-rate Adams Methods}{4}{subsubsection.18}
+\contentsline {subsubsection}{\numberline {1.3.3}Implicit Adams Methods and Extension to Multi-rate}{5}{subsubsection.21}
+\contentsline {subsubsection}{\numberline {1.3.4}Timestep Control Algorithm}{8}{subsubsection.31}
+\contentsline {subsection}{\numberline {1.4}Validation Plan}{9}{subsection.36}
+\contentsline {subsection}{\numberline {1.5}Outlook}{9}{subsection.38}
+\contentsline {subsubsection}{\numberline {1.5.1}Current Status}{9}{subsubsection.39}
+\contentsline {subsubsection}{\numberline {1.5.2}Risk Mitigation}{10}{subsubsection.41}
+\contentsline {section}{\numberline {2}Energy-Stable Hybrid Spatial Discretizations}{11}{section.44}
+\contentsline {subsection}{\numberline {2.1}Motivation \& Background}{11}{subsection.45}
+\contentsline {subsection}{\numberline {2.2}Governing Equations}{13}{subsection.47}
+\contentsline {subsection}{\numberline {2.3}Numerical Methods}{14}{subsection.52}
+\contentsline {subsubsection}{\numberline {2.3.1}Summation-by-Parts Operators}{14}{subsubsection.53}
+\contentsline {subsubsection}{\numberline {2.3.2}Discontinuous Galerkin Method}{16}{subsubsection.66}
+\contentsline {subsubsection}{\numberline {2.3.3}Interface Method}{17}{subsubsection.74}
+\contentsline {subsection}{\numberline {2.4}Validation Plan}{19}{subsection.81}
+\contentsline {subsection}{\numberline {2.5}Outlook}{20}{subsection.88}
+\contentsline {subsubsection}{\numberline {2.5.1}Current Status}{20}{subsubsection.89}
+\contentsline {subsubsection}{\numberline {2.5.2}Risk Mitigation}{21}{subsubsection.91}
