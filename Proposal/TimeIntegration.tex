@@ -26,7 +26,7 @@ To more accurately handle such situations, implicit-explicit (IMEX) time
 integration schemes have been developed in order to partition the
 governing equations and treat the stiff terms implicitly while treating
 the nonstiff terms explicitly. In 2003, Kennedy and Carpenter \cite{kennedy2003additive}
-introduced additive Runge-Kutta schemes for convection-diffusion-reaction equations,
+introduced additive Runge--Kutta schemes for convection-diffusion-reaction equations,
 demonstrating a higher order of temporal accuracy than the operator splitting
 approach is capable of attaining. In 2011, Sv{\"a}rd and Mishra \cite{svard2011implicit}
 also introduced more simplistic one-step IMEX schemes mimicking single stages in these
@@ -44,7 +44,7 @@ multi-rate schemes \cite{constantinescu2010extrapolated,
 constantinescu2013extrapolated}, but failed to introduce a scheme featuring both
 implicitly and explicitly advanced components within a multi-rate framework. Kl\"{o}ckner
 \cite{klockner2010high} also conducted an empirical investigation into the effects of the various design choices
-present in a two-component scheme based on the work of Gear and Wells, with Mikida et al.
+present in an explicit two-component scheme based on the work of Gear and Wells, with Mikida et al.
 \cite{mikida2019multi} applying this framework to fluid simulation on overset grids using provably stable
 interpolation to form the coupling between grid-determined timescales.
 
@@ -178,7 +178,7 @@ where the $a$ coefficients are defined per-species for an arbitrary number of te
 %%%%% END CANDIDATE FOR REMOVAL
 
 %%%%% CANDIDATE FOR REMOVAL
-As for the diffusion fluxes, these are defined using a mixture-averaged approach - that is, $\varphi_{ki}$
+As for the diffusion fluxes, these are defined using a mixture-averaged approach --- that is, $\varphi_{ki}$
 is given by
 \begin{align}
 \varphi_{ki} = \varphi_{ki}^{*} + \varphi_{ki}^{c},
@@ -221,14 +221,14 @@ correction term is given by
 
 \subsubsection{Adams Methods}
 
-For clarity, here we provide a brief derivation of a standard Adams-Bashforth (AB)
+For clarity, here we provide a brief derivation of a standard Adams--Bashforth (AB)
 integrator, as described in~\cite{bashforth1883attempt}, starting from a model initial value problem (IVP)
 given by
 \begin{align}
 \frac{\text{d}y}{\text{d}t} = F(t,y), \quad y(0) = y_{0}. \label{eq:ivp}
 \end{align}
 Applying a method of lines (MOL) approach to spatially discretize and solve
-the reactive Navier--Stokes equations \eref{eq:consmass} - \eref{eq:pres} ultimately
+the reactive Navier--Stokes equations~\eref{eq:consmass}--\eref{eq:pres} ultimately
 provides this form. We approximate the time dependency of the right-hand side function
 with a polynomial with coefficients $\boldsymbol{\alpha}$ (formed by interpolating past
 values of $F(t,y)$), extrapolate with that polynomial approximation, and integrate
@@ -245,7 +245,7 @@ V^{T} \cdot \boldsymbol{\alpha} = \int_0^{\Delta t} \tau^{i} d\tau = \frac{(\Del
 where $\int_0^{\Delta t} \tau^{i} d\tau$ is a vector evaluating the integral of
 the interpolation polynomial, and $V$ is the Vandermonde matrix with monomial
 basis and nodes $t_{1}, t_{2}, \hdots t_{n}$, corresponding to past time
-values. In Eqn. \eref{eq:vandermonde}, $n$ is equal to the order of the integrator,
+values. In Eqn.~\eref{eq:vandermonde}, $n$ is equal to the order of the integrator,
 and $t_{i}$ are the time history values, with $0 \leq t_{1} < t_{2} \hdots <
 t_{n}$.  The coefficients $\boldsymbol{\alpha}$ are used to extrapolate to the
 next state via
@@ -375,18 +375,18 @@ To fully realize the potential multi-rate formulation for reacting
 Navier--Stokes problems (for which the matrix of right-hand sides is
 not as simple as in \cite{mikida2019multi}, where both right-hand sides
 and state components are realized as per-overset-grid quantities),
-we need to introduce additive terms to Eqn. \eref{eq:mrab}, which we express
+we need to introduce additive terms to Eqn.~\eref{eq:mrab}, which we express
 as terms coupling the fast and slow states ($a_{fs}$ and $a_{sf}$) and
 self-influencing terms ($a_{ff}$ and $a_{ss}$):
 \begin{align}
 \frac{\textrm{d}}{\textrm{d}t}\left( \begin{array}{c} f(t) \\ s(t) \end{array} \right) = \left( \begin{array}{c} a_{ff}(f,s) + a_{fs}(f,s) \\ a_{sf}(f,s) + a_{ss}(f,s) \end{array} \right). \label{eq:mr_reacting}
 \end{align}
-In the reacting flow formulation with which we are concerned (Eqn. \eref{eq:consmass} - \eref{eq:pres}), we define
+In the reacting flow formulation with which we are concerned (Eqn.~\eref{eq:consmass}--\eref{eq:pres}), we define
 the "fast" component of our Navier--Stokes solution as a vector of the
 mass fractions of the species as well as the temperature and pressure, $[\rho Y_{k}, T, P]^T$.
 The "slow" component is then defined as the set of typical conserved variables in a
 non-reacting simulation, $[\rho, (\rho \vec{u}), (\rho E)]^T$. As
-a result, one possible definition of the additive terms in Eqn. \eref{eq:mr_reacting} can be given as follows:
+a result, one possible definition of the additive terms in Eqn.~\eref{eq:mr_reacting} can be given as follows:
 \begin{align*}
 a_{ff}(f,s) &= \left(\begin{array}{c} W_{k}\dot{\omega}_{k} \\[0.3cm]
 	       - \frac{\sum_{k=1}^{N_{sp}}U_{k}(T)\frac{\partial \rho Y_{k}}{\partial t}\frac{1}{W_{k}}}{\sum_{k=1}^{N_{sp}}[C]_{k}C_{v,k}(T)} \\[0.5cm]
@@ -402,7 +402,7 @@ a_{ss}(f,s) &= \left(\begin{array}{c} -\frac{\partial}{\partial x_{j}}(\rho u_{j
                                       -\frac{\partial}{\partial x_{j}}((\rho E)u_{j} + q_{j} - u_{i}\tau_{ij}) \end{array} \right)
 \end{align*}
 As our treatment of this set of equations with multi-rate integration develops,
-so too will our approach to defining the additive terms of Eqn. \eref{eq:mr_reacting},
+so too will our approach to defining the additive terms of Eqn.~\eref{eq:mr_reacting},
 as well as which state variables are deserving of fast or slow treatment.
 
 \subsubsection{Implicit Adams Methods and Extension to Multi-rate}
@@ -434,27 +434,27 @@ as well as which state variables are deserving of fast or slow treatment.
 %%%%% END CANDIDATE FOR REMOVAL
 The concepts in the previous sections, both single- and multi-rate, are
 easily extended to include implicit integration methods. We define an
-implicit Adams (Adams-Moulton \cite{moulton1926new}) method in the same manner as above, starting
-with the same simplified IVP of Eqn. \eref{eq:ivp} and expressing the scheme as
+implicit Adams (Adams--Moulton \cite{moulton1926new}) method in the same manner as above, starting
+with the same simplified IVP of Eqn.~\eref{eq:ivp} and expressing the scheme as
 \begin{align}
 y(t_{i+1}) = y(t_{i}) +& \beta_{1}F(t_{i-n+1},y_{i-n+1}) + \beta_{2}F(t_{i-n},y_{i-n}) \notag \\
 +& \cdots + \beta_{n}F(t_{i+1},y_{i+1}). \label{eq:am_general}
 \end{align}
 The coefficients $\boldsymbol{\beta}$ are constructed in a manner identical to
-the Adams-Bashforth coefficients $\boldsymbol{\alpha}$ (see Eqn. \ref{eq:vandermonde}),
+the Adams-Bashforth coefficients $\boldsymbol{\alpha}$ (see Eqn.~\eref{eq:vandermonde}),
 using temporal nodes shifted by $\Delta t$ forward in time.
 
 Extension of this implicit method into the multi-rate framework is
-straightforward, given that the driving principle of the Adams-Moulton
+straightforward, given that the driving principle of the Adams--Moulton
 method (namely, maintenance of right-hand side history values through
-which to extrapolate) is the same as that of Adams-Bashforth, and amounts to
+which to extrapolate) is the same as that of Adams--Bashforth, and amounts to
 allowing the histories of each right-hand side term to maintain their
 own timestep intervals.
 
 In the case that implicit time integration is used, it will be used
 to drive $a_{ff}(f,s)$. In order to perform the implicit solve required
-to advance this right-hand side via Adams-Moulton, a Jacobian matrix
-is required. While other implementations such as CVODE's adaptive BDF
+to advance this right-hand side via Adams--Moulton (see Eqn.~\eref{eq:am_general}), a Jacobian matrix
+is required. While other implementations such as CVODE's adaptive backward differentiation formula (BDF)
 algorithm for stiff problems often make use of finite-difference generated
 Jacobians, we will instead use PyJac-V2 \cite{curtis2018using} to obtain the analytical Jacobian
 for a given chemical mechanism via code generation, which will then
@@ -473,7 +473,7 @@ to the kinetics and reactive source term:
 f = \left(\frac{dT}{dt}, \frac{dP}{dt}, \frac{dn_{1}}{dt}, \frac{dn_{2}}{dt}, \hdots \frac{dn_{N_{sp}-1}}{dt} \right).
 \end{align}
 Here, $n_{i}$ is the number of moles of species $i$ in the mixture.
-While the temperature and pressure right-hand sides are given by Eqn. \eref{eq:temp} and \eref{eq:pres},
+While the temperature and pressure right-hand sides are given by Eqn.~\eref{eq:temp} and~\eref{eq:pres},
 note that the molar source terms pertain only to the net production rates of the species:
 \begin{align}
 \frac{dn_{i}}{dt} = V \dot{\omega}_{i}.
@@ -487,7 +487,7 @@ mechanism rather than the mass fractions:
 The number of moles of the last species in the mixture is calculated
 via the mass fractions summing to 1.
 
-With these definitions in mind, we can expand Eqn. \eref{eq:jac} and express
+With these definitions in mind, we can expand Eqn.~\eref{eq:jac} and express
 it in true matrix form:
 \begin{align}
 J = \begin{bmatrix} \frac{d\dot{T}}{dT} & \frac{d\dot{T}}{dP} & \frac{d\dot{T}}{dn_{1}} & \hdots & \frac{d\dot{T}}{dn_{N_{sp}-1}} \\
@@ -531,7 +531,7 @@ gas law to obtain the pressure). This modified Jacobian can be expressed as
 J^{*} = \begin{bmatrix}	\frac{d\dot{n}_{1}^{*}}{dn_{1}} & \hdots & \frac{d\dot{n}_{1}^{*}}{dn_{N_{sp}-1}} \\
 	                \vdots & \ddots & \vdots \\
 	                \frac{d\dot{n}_{N_{sp}-1}^{*}}{dn_{1}} & \hdots & \frac{d\dot{n}_{N_{sp}-1}^{*}}{dn_{N_{sp}-1}}, \\
-    \end{bmatrix}
+\end{bmatrix} \label{eq:diff_alg_jac}
 \end{align}
 where
 \begin{align}
@@ -542,7 +542,8 @@ internal energy, and $C_{v}$ is the specific heat of the mixture at constant
 volume.
 
 Which of these Jacobians is ideal for our purposes is a consideration worth
-monitoring as our implicit integration techniques develop. In particular, 
+monitoring as our implicit integration techniques develop, but for now we
+employ the differential-algebraic approach of Eqn.~\eref{eq:diff_alg_jac}. Additionally, 
 a third relatively unexplored approach would use the fully differential
 method with pressure and temperature source terms, while also using penalization
 to force the solution towards the constraint manifold. This attenuation approach
@@ -638,10 +639,10 @@ it provides the simplest model for scramjet/ramjet combustion processes.
 
 \subsubsection{Current Status}
 
-At present, implicit-explicit time integration of reacting flows using Runge-Kutta
+At present, implicit-explicit time integration of reacting flows using Runge--Kutta
 based methods in conjunction with code generation of source terms and Jacobians for
 the chemical mechanisms is implemented and undergoing testing with the fluid solver
-application. Implicit Adams methods (with single-rate Adams-Moulton being the baseline)
+application. Implicit Adams methods (with single-rate Adams--Moulton being the baseline)
 for the purposes of chemistry integration are also being implemented, along with
 an application of the error-informed timestep control algorithm to both
 single-rate and multi-rate Adams methods. Construction of implicit-explicit multi-rate
@@ -680,7 +681,7 @@ Assuming demonstration of improved
 performance and/or accuracy of the \emph{multi-rate} integrators over the
 state-of-the-art is for reasons unforseen impossible, a "fallback" takeaway
 would be demonstration of improvement over a low-order splitting
-approach via Leap implementation of an existing IMEX Runge-Kutta based scheme
+approach via Leap implementation of an existing IMEX Runge--Kutta based scheme
 \cite{kennedy2003additive} that treats the chemistry implicitly via code-generated
 analytical Jacobians. Given the use of a coupled implicit-explicit scheme
 (for which high order has already been proven in other circumstances),
@@ -695,7 +696,7 @@ a premixed, freely propagating hydrogen flame with an unburned gas temperature
 of 300 K at a pressure of one atmosphere (see Figure \ref{fig:freeflame_output}). Comparing the estimated laminar
 flame speed to that of a steady-state analysis performed by Cantera at a number
 of equivalence ratios $\phi$, we see suitable agreement of less than 3\% error, indicating
-that the reacting flow equations - and in particular the chemical source terms and Jacobians -
+that the reacting flow equations --- and in particular the chemical source terms and Jacobians ---
 are correctly implemented and ready for both further experimentation with multi-rate
 timescale splitting and a more thorough analysis of performance.
 \begin{figure}
