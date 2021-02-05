@@ -138,6 +138,7 @@ our form)
 \end{itemize}
 These equations are given below, along with a brief explanation of the notation/nomenclature
 used.
+\pagebreak
 \begin{align}
 \frac{\partial \rho}{\partial t} + \frac{\partial}{\partial x_{j}}(\rho u_{j}) &= 0 \label{eq:consmass} \\
 \frac{\partial}{\partial t}(\rho u_{i}) + \frac{\partial}{\partial x_{j}}(\rho u_{i} u_{j} + P\delta_{ij} - \tau_{ij}) &= 0 \label{eq:consmom} \\
@@ -161,38 +162,39 @@ is the viscous stress tensor, $\varphi_{ki}$ are the diffusion fluxes, and $q_{j
 q_{j} = - \frac{\partial (\lambda T)}{\partial x_{j}} + h_{k}\varphi_{kj}.
 \end{align}
 In this expression, $\lambda$ is the thermal conductivity, and $h_{k}$ is the enthalpy of species $k$.
-As for the diffusion fluxes, these are defined using a mixture-averaged approach with a
-correction term to ensure mass conservation \cite{smooke2013computation, poinsot2005theoretical, kee2005chemically}.
+%As for the diffusion fluxes, these are defined using a mixture-averaged approach with a
+%correction term to ensure mass conservation \cite{smooke2013computation, poinsot2005theoretical, kee2005chemically}.
 $C_{v,k}(T)$ is the specific heat at constant volume of species $k$ at temperature $T$, and $U_{k}(T)$ is
-the internal energy of species $k$ at temperature $T$. These quantities are defined using the NASA 9-coefficient
-polynomial parameterization \cite{mcbride2002nasa}.
+the internal energy of species $k$ at temperature $T$. These quantities
+%are defined using the NASA 9-coefficient
+%polynomial parameterization \cite{mcbride2002nasa}.
 %%%%% CANDIDATE FOR REMOVAL
-%are defined using the NASA 9-coefficient polynomial parameterization \cite{mcbride2002nasa}, such that
-%\begin{align}
-%\frac{C_{v,k}(T)}{R} &= a_{0} + a_{1}T + a_{2}T^{2} + a_{3}T^{3} + a_{4}T^{4} - 1 \\
-%\frac{U_{k}(T)}{RT} &= a_{0} + \frac{a_{1}}{2}T + \frac{a_{2}}{3}T^{2} + \frac{a_{3}}{4}T^{3} + \frac{a_{4}}{5}T^{4} + \frac{a_{5}}{T} - 1,
-%\end{align}
-%where the $a$ coefficients are defined per-species for an arbitrary number of temperature regions.
+are defined using the NASA 9-coefficient polynomial parameterization \cite{mcbride2002nasa}, such that
+\begin{align}
+\frac{C_{v,k}(T)}{R} &= a_{0} + a_{1}T + a_{2}T^{2} + a_{3}T^{3} + a_{4}T^{4} - 1 \\
+\frac{U_{k}(T)}{RT} &= a_{0} + \frac{a_{1}}{2}T + \frac{a_{2}}{3}T^{2} + \frac{a_{3}}{4}T^{3} + \frac{a_{4}}{5}T^{4} + \frac{a_{5}}{T} - 1,
+\end{align}
+where the $a$ coefficients are defined per-species for an arbitrary number of temperature regions.
 %%%%% END CANDIDATE FOR REMOVAL
 
 %%%%% CANDIDATE FOR REMOVAL
-%As for the diffusion fluxes, these are defined using a mixture-averaged approach - that is, $\varphi_{ki}$
-%is given by
-%\begin{align}
-%\varphi_{ki} = \varphi_{ki}^{*} + \varphi_{ki}^{c},
-%\end{align}
-%where $\varphi_{ki}^{*}$ is the mixture-averaged approximation, and $\varphi_{ki}^{c}$
-%is a correction term to ensure mass conservation. The mixture-averaged approximation
-%is defined by
-%\begin{align}
-%\varphi_{ki}^{*} = -\rho D_{k,m}\frac{W_{k}}{W} \frac{\partial X_{k}}{\partial x_{i}}
-%\end{align}
-%where $D_{k,m}$ is the mixture-averaged diffusivity of species $k$, $W$ is the mean
-%molecular weight, and $X_{k}$ is the mole fraction of species $k$. Finally, the
-%correction term is given by
-%\begin{align}
-%\varphi_{ki}^{c} = -Y_{k} \sum_{n=1}^{N_{sp}} \varphi_{ni}^{*}
-%\end{align}
+As for the diffusion fluxes, these are defined using a mixture-averaged approach - that is, $\varphi_{ki}$
+is given by
+\begin{align}
+\varphi_{ki} = \varphi_{ki}^{*} + \varphi_{ki}^{c},
+\end{align}
+where $\varphi_{ki}^{*}$ is the mixture-averaged approximation, and $\varphi_{ki}^{c}$
+is a correction term to ensure mass conservation. The mixture-averaged approximation
+is defined by
+\begin{align}
+\varphi_{ki}^{*} = -\rho D_{k,m}\frac{W_{k}}{W} \frac{\partial X_{k}}{\partial x_{i}},
+\end{align}
+where $D_{k,m}$ is the mixture-averaged diffusivity of species $k$, $W$ is the mean
+molecular weight, and $X_{k}$ is the mole fraction of species $k$. Finally, the
+correction term is given by
+\begin{align}
+\varphi_{ki}^{c} = -Y_{k} \sum_{n=1}^{N_{sp}} \varphi_{ni}^{*}.
+\end{align}
 %%%%% END CANDIDATE FOR REMOVAL
 
 %%%%% CANDIDATE FOR CHANGE/REMOVAL
@@ -623,7 +625,7 @@ pre-exponential factors in the Arrhenius reaction rates, and for the fluid, we c
 the magnitude of the initial crossflow velocity).
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/hyperbolic_tangent_air.png}
+\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/hyperbolic_tangent_air.png}
 \caption{Perturbed initial condition of the hyperbolic tangent example - sea-level air.}
 \label{fig:hyperbolic_cold_rhov2}
 \end{figure}
@@ -650,7 +652,7 @@ based in large part on an example problem bundled with the software, is given in
 Figure \ref{fig:cantera_reactors}.
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/cantera_reactors_soln.png}
+\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/cantera_reactors_soln.png}
 \caption{Cantera two-reactor example problem. The solution shown is obtained using
 	 Cantera's internal reactor system integrator, which is based on the same
 	 BDF algorithm employed by CVODE. The piston velocity is initially zero,
@@ -698,7 +700,7 @@ are correctly implemented and ready for both further experimentation with multi-
 timescale splitting and a more thorough analysis of performance.
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/flame_figures.png}
+\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/flame_figures.png}
 \caption{Figures showing the temperature profile of the one-dimensional free-flame example
          at initial condition (left) and after 0.0025 seconds (right).}
 \label{fig:freeflame_output}

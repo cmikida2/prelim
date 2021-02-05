@@ -47,7 +47,7 @@ to first order accuracy if the continuous coordinate transforms on either side o
 interface are dissimilar.
 \begin{figure}
 \centering
-\includegraphics[width=0.7\linewidth,trim=4 4 4 4,clip]{figures/nonconforming_samples.png}
+\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/nonconforming_samples.png}
 \caption{Two examples demonstrating the use of nonconforming interfaces. Left: Zhu, Chen, Zhong, and Liu \cite{zhu2011hybrid}.
 	 Right: Kozdon and Wilcox \cite{kozdon2016stable}}
 \label{fig:nonconforming_samples}
@@ -162,18 +162,19 @@ These conditions together ensure that the discrete version of the integration by
 \[\langle H^{-1}Q x , y\rangle_{H} = x_{N} y_{N} -  x_{1} y_{1} - \langle x,H^{-1}Q y\rangle _{H}. \]
 
 %%%%% CANDIDATE FOR REMOVAL
-%The resulting operators can be either explicit (in this case, $H$ is purely diagonal) or implicit.
-%This theory, originally presented in \cite{strand1994summation}, can also be extended to higher
-%dimensions using Kronecker products.  For example, in two dimensions, the matrices $P^{-1} G_x$
-%and $P^{-1} G_y$ define the $x$- and $y$- derivatives on a two-dimensional grid:
-%\begin{align}
-%P = H_{x} \otimes H_{y} \notag \\
-%G_{x} = Q_{x} \otimes H_{y} \notag \\
-%G_{y} = H_{x} \otimes Q_{y} \notag
-%\end{align}
-%Note that this formulation assumes that we have ${H_{x},Q_{x}}$, a pair of $n_{x} \times n_{x}$ SBP
-%matrices of approximation order $p$, and ${H_{y},Q_{y}}$, a pair of $n_{y} \times n_{y}$ SBP matrices
-%of approximation order $q$. Finally, we also note that these SBP operators do not guarantee strict
+The resulting operators can be either explicit (in this case, $H$ is purely diagonal) or implicit.
+This theory can also be extended to higher
+dimensions using Kronecker products.  For example, in two dimensions, the matrices $P^{-1} G_x$
+and $P^{-1} G_y$ define the $x$- and $y$- derivatives on a two-dimensional grid:
+\begin{align}
+P = H_{x} \otimes H_{y} \notag \\
+G_{x} = Q_{x} \otimes H_{y} \notag \\
+G_{y} = H_{x} \otimes Q_{y} \notag
+\end{align}
+Note that this formulation assumes that we have ${H_{x},Q_{x}}$, a pair of $n_{x} \times n_{x}$ SBP
+matrices of approximation order $p$, and ${H_{y},Q_{y}}$, a pair of $n_{y} \times n_{y}$ SBP matrices
+of approximation order $q$.
+%Finally, we also note that these SBP operators do not guarantee strict
 %%%%% END CANDIDATE FOR REMOVAL
 Note that these SBP operators do not alone guarantee strict
 stability for an initial boundary value problem. We must also apply the boundary conditions using a
@@ -288,39 +289,39 @@ method.
 \subsubsection{Discontinuous Galerkin Method}
 
 %%%%% CANDIDATE FOR REMOVAL
-%The discontinuous Galerkin method we will target our interface method(s) to
-%will be briefly summarized here. As in Kozdon and Wilcox, we use a curvilinear
-%triangle-based DG method, and we denote a DG element $\Omega_e$ with triangular
-%reference element $\tilde{\Omega}$. To obtain a version of the governing equations
-%\eref{eq:wave1} - \eref{eq:wave2} usable by DG, we must first obtain the variational
-%form by introducing test functions $w_{i}$ and $\varphi$ for the velocities and pressure
-%respectively, multiplying them into their respective equations, and integrating over
-%the reference element:
-%\begin{align}
-%  \notag
-%  &\int_{\tilde{\Omega}} w_{i}\left[\rho J \frac{\partial v_{i}}{\partial t}
-%  + \frac{\partial}{\partial \xi_{1}}\left(J\frac{\partial \xi_{1}}{\partial x_{i}} p\right)
-%  + \frac{\partial}{\partial \xi_{2}}\left(J\frac{\partial \xi_{2}}{\partial x_{i}} p\right)\right]\;dA\\
-%  \label{eq:wave1_var}
-%  &\qquad=
-%  -\int_{\partial \tilde{\Omega}} w_{i} S_{J} n_{i} \left( p^* - p\right)ds,
-%  \quad i=1,2,\\
-%  \notag
-%  &\int_{\tilde{\Omega}}
-%  \varphi \left[J\frac{\partial p}{\partial t} + \lambda\left(
-%    J\frac{\partial \xi_{1}}{\partial x_{1}} \frac{\partial v_{1}}{\partial \xi_{1}}
-%  + J\frac{\partial \xi_{2}}{\partial x_{1}} \frac{\partial v_{1}}{\partial \xi_{2}}
-%  + J\frac{\partial \xi_{1}}{\partial x_{2}} \frac{\partial v_{2}}{\partial \xi_{1}}
-%  + J\frac{\partial \xi_{2}}{\partial x_{2}} \frac{\partial v_{2}}{\partial \xi_{2}}\right)\right]\;dA\\
-%  \label{eq:wave2_var}
-%  &\qquad=
-%  -\int_{\partial \tilde{\Omega}} \varphi\lambda S_{J}
-%  \left(v^*-v\right) ds,
-%\end{align}
-%In these equations, the normals $n_{i}$ and surface Jacobians $S_{J}$ are the same
-%as the ones defined by equations \eref{eq:norms_jac}, and the starred
-%quantities again refer to boundary and interface conditions implemented via penalization,
-%in this instance better referred to as numerical fluxes.
+The discontinuous Galerkin method we will target our interface method(s) to
+will be briefly summarized here. As in Kozdon and Wilcox, we use a curvilinear
+triangle-based DG method, and we denote a DG element $\Omega_e$ with triangular
+reference element $\tilde{\Omega}$. To obtain a version of the governing equations
+\eref{eq:wave1} - \eref{eq:wave2} usable by DG, we must first obtain the variational
+form by introducing test functions $w_{i}$ and $\varphi$ for the velocities and pressure
+respectively, multiplying them into their respective equations, and integrating over
+the reference element:
+\begin{align}
+  \notag
+  &\int_{\tilde{\Omega}} w_{i}\left[\rho J \frac{\partial v_{i}}{\partial t}
+  + \frac{\partial}{\partial \xi_{1}}\left(J\frac{\partial \xi_{1}}{\partial x_{i}} p\right)
+  + \frac{\partial}{\partial \xi_{2}}\left(J\frac{\partial \xi_{2}}{\partial x_{i}} p\right)\right]\;dA\\
+  \label{eq:wave1_var}
+  &\qquad=
+  -\int_{\partial \tilde{\Omega}} w_{i} S_{J} n_{i} \left( p^* - p\right)ds,
+  \quad i=1,2,\\
+  \notag
+  &\int_{\tilde{\Omega}}
+  \varphi \left[J\frac{\partial p}{\partial t} + \lambda\left(
+    J\frac{\partial \xi_{1}}{\partial x_{1}} \frac{\partial v_{1}}{\partial \xi_{1}}
+  + J\frac{\partial \xi_{2}}{\partial x_{1}} \frac{\partial v_{1}}{\partial \xi_{2}}
+  + J\frac{\partial \xi_{1}}{\partial x_{2}} \frac{\partial v_{2}}{\partial \xi_{1}}
+  + J\frac{\partial \xi_{2}}{\partial x_{2}} \frac{\partial v_{2}}{\partial \xi_{2}}\right)\right]\;dA\\
+  \label{eq:wave2_var}
+  &\qquad=
+  -\int_{\partial \tilde{\Omega}} \varphi\lambda S_{J}
+  \left(v^*-v\right) ds,
+\end{align}
+In these equations, the normals $n_{i}$ and surface Jacobians $S_{J}$ are the same
+as the ones defined by Eqn. \eref{eq:norms_jac}, and the starred
+quantities again refer to boundary and interface conditions implemented via penalization,
+in this instance better referred to as numerical fluxes.
 %\begin{align}
 %&\int_{\tilde{\Omega}} \left[ w_{i}\rho J \frac{\partial v_{i}}{\partial t}
 %- \frac{\partial w_{i}}{\partial \xi_{1}}J\frac{\partial \xi_{1}}{\partial x_{i}} p
@@ -328,22 +329,22 @@ method.
 %=
 %-\int_{\partial \tilde{\Omega}} w_{i} S_{J} n_{i} p^*ds.
 %\end{align}
-%Applying integration by parts to \eref{eq:wave1_var} to move the spatial derivatives to
-%the test functions gives us the skew-symmetric form of the variational equations, which
-%can then be spatially discretized with the DG method (see Hesthaven and Warburton for more
-%detail on this) to obtain:
+Applying integration by parts to Eqn. \eref{eq:wave1_var} to move the spatial derivatives to
+the test functions gives us the skew-symmetric form of the variational equations, which
+can then be spatially discretized with the DG method (see Hesthaven and Warburton for more
+detail on this) to obtain:
 %%%%% END CANDIDATE FOR REMOVAL
-The discontinuous Galerkin (DG) method we will target our interface method(s) to
-will be briefly summarized here. As in Kozdon and Wilcox, we use a curvilinear
-triangle-based DG method, and we denote a DG element $\Omega_e$ with triangular
-reference element $\tilde{\Omega}$. To obtain a version of the governing equations
-\eref{eq:wave1} - \eref{eq:wave2} usable by DG, we must first obtain the variational
-form by introducing test functions $w_{i}$ and $\varphi$ for the velocities and pressure
-respectively, multiplying them into their respective equations, and integrating over
-the reference element. Applying integration by parts to the resulting equations to move
-the spatial derivatives to the test functions gives us the skew-symmetric form of the
-variational equations, which can then be spatially discretized with the DG method 
-(see Hesthaven and Warburton \cite{hesthaven2007nodal} for more detail on this) to obtain:
+%The discontinuous Galerkin (DG) method we will target our interface method(s) to
+%will be briefly summarized here. As in Kozdon and Wilcox, we use a curvilinear
+%triangle-based DG method, and we denote a DG element $\Omega_e$ with triangular
+%reference element $\tilde{\Omega}$. To obtain a version of the governing equations
+%\eref{eq:wave1} - \eref{eq:wave2} usable by DG, we must first obtain the variational
+%form by introducing test functions $w_{i}$ and $\varphi$ for the velocities and pressure
+%respectively, multiplying them into their respective equations, and integrating over
+%the reference element. Applying integration by parts to the resulting equations to move
+%the spatial derivatives to the test functions gives us the skew-symmetric form of the
+%variational equations, which can then be spatially discretized with the DG method 
+%(see Hesthaven and Warburton \cite{hesthaven2007nodal} for more detail on this) to obtain:
 \begin{align}
   \rho \pmb{M}_{J} \frac{d \pmb{v}_{i}}{dt} =&
   \pmb{D}_{1}^{T} \pmb{M}_{1i} \pmb{p}
@@ -366,10 +367,10 @@ variational equations, which can then be spatially discretized with the DG metho
 \end{align}
 These equations provide a semi-discretization on each element.
 %%%%% replacement
-The normals $n_{i}$ and surface Jacobians $S_{J}$ are the same
-as the ones defined by Eqn. \eref{eq:norms_jac}, and the starred
-quantities again refer to boundary and interface conditions implemented via penalization,
-in this instance better referred to as numerical fluxes.
+%The normals $n_{i}$ and surface Jacobians $S_{J}$ are the same
+%as the ones defined by Eqn. \eref{eq:norms_jac}, and the starred
+%quantities again refer to boundary and interface conditions implemented via penalization,
+%in this instance better referred to as numerical fluxes.
 %%%%% end replacement
 The vector $\pmb{v}_{K}^{-}$ is the normal component of velocity along
 edge $K$ of the element evaluated at the cubature points:
@@ -479,7 +480,7 @@ $\pmb{P}_{f2g}$ can also be generalized as projection operators to and from the 
 glue layer.
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,trim=4 4 4 4,clip]{figures/glue_layers.png}
+\includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/glue_layers.png}
 \caption{Image from Kozdon and Wilcox \cite{kozdon2016stable} demonstrating the glue
          layers present in grid-to-grid projection at a nonconforming interface.}
 \label{fig:glue_layers}
