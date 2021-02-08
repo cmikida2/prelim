@@ -50,7 +50,7 @@ interpolation to form the coupling between grid-determined timescales.
 
 %\subsubsection{Goals, Bounds, and Impact}
 
-The primary goal of this section of the thesis is demonstration of a novel
+The primary goal of this section of the thesis is production of a novel
 time integration scheme driving a demonstrative reacting flow problem
 with improved efficacy identified by superior accuracy and stability and/or
 faster performance relative to existing methods. The integration project
@@ -627,7 +627,7 @@ the magnitude of the initial crossflow velocity).
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth,trim=4 4 4 4,clip]{figures/hyperbolic_tangent_air.png}
-\caption{Perturbed initial condition of the hyperbolic tangent example - sea-level air.}
+\caption{Perturbed initial condition of the hyperbolic tangent example using sea-level air.}
 \label{fig:hyperbolic_cold_rhov2}
 \end{figure}
 In doing so, what should result is a problem with ample testbed capabilities for our
@@ -673,7 +673,7 @@ solver is a one-dimensional laminar free flame problem, which may also be used
 as a first-pass validation (via comparison to the Cantera-estimated steady-state
 flame speed) for new integration methods for reacting flows as they become available.
 A basic description of this case, as well as flame speed data generated via a Leap-generated
-IMEX ARK integrator using PyJac-V2 analytical Jacobians, is given in the next section.
+IMEX additive Runge--Kutta integrator using PyJac-V2 analytical Jacobians, is given in the next section.
 
 \subsubsection{Risk Mitigation}
 
